@@ -8,14 +8,79 @@ certificate and in `docs/assumptions-register.md`.
 
 Duke CAP2027 Team 4 for BNY AI Hub. Public data only.
 
+## How one week flows through the system
+
+Every Friday the same six layers run, using only what was public that day. Amber marks the two places a language
+model is involved: scoring each Fed statement's stance (once per statement, cached) and forming the views.
+Everything else is deterministic and inspectable. The dashed edge is the project's new idea: when a rule binds, the
+critic's one-sentence note goes back to the model, which revises, up to two rounds (the "told" strategy). The
+"clipped" strategy takes the same first views and lets the solver trim them without telling the model.
+
+```mermaid
+flowchart TB
+    subgraph L1["1 · Data, point-in-time"]
+        direction LR
+        D1["FRED / ALFRED vintages<br/>as first published"]
+        D2["ETF prices<br/>ten funds"]
+        D3["FOMC statements<br/>dated, masked"]
+        D4["EPU and GPR<br/>news-count indexes"]
+    end
+    subgraph L2["2 · Signals"]
+        direction LR
+        S1["z-scores against each<br/>series' own 10-year past"]
+        S2["theme composites<br/>growth, inflation, policy, financial"]
+        S3["regime odds from<br/>empirical percentiles"]
+        S4["Fed stance scored by the model,<br/>stance change, novelty"]
+    end
+    subgraph L3["3 · Views"]
+        direction LR
+        V1["fitted formula agent<br/>past-only ridge, refit weekly"]
+        V2["LLM agent<br/>masked prompt"]
+        VO["structured view object<br/>direction, edge, confidence, evidence"]
+    end
+    subgraph L4["4 · Allocation"]
+        N["neutral portfolio<br/>inverse volatility, computed weekly"]
+        BL["Black-Litterman blend<br/>views pull expected returns from the neutral prior"]
+        QP["constrained solver<br/>caps, volatility, duration, capital, turnover<br/>all relative to the neutral portfolio"]
+        CR["deterministic critic<br/>names every rule that binds"]
+    end
+    subgraph L5["5 · Explainability"]
+        X["one JSON + Markdown record per decision<br/>nothing post-hoc"]
+    end
+    subgraph L6["6 · Evaluation"]
+        E["backtest vs neutral portfolio and 60/40<br/>block bootstrap · deflated Sharpe · cost curve<br/>attribution · leakage certificate"]
+    end
+
+    D1 --> S1
+    D2 --> S1
+    D4 --> S1
+    D3 --> S4
+    S1 --> S2 --> S3
+    S2 --> V1
+    S3 --> V1
+    S4 --> V1
+    S2 --> V2
+    S3 --> V2
+    S4 --> V2
+    V1 --> VO
+    V2 --> VO
+    D2 --> N --> BL
+    VO --> BL --> QP --> CR
+    CR -. "rule binds: note goes back, model revises (told)" .-> V2
+    CR -- "no rule binds, or clipped mode" --> W["weights held for one week"]
+    CR --> X
+    W --> E
+
+    classDef llm fill:#fbf1de,stroke:#b7791f,color:#17211f
+    classDef det fill:#e1efed,stroke:#0f6b66,color:#17211f
+    classDef out fill:#f3f1ea,stroke:#6f6e68,color:#17211f
+    class V2,S4 llm
+    class N,BL,QP,CR,V1 det
+    class X,E,W out
 ```
- 1. Data (point-in-time)     FRED/ALFRED vintages · ETF prices · FOMC statements · EPU · GPR
- 2. Signals                  z-scores · Fed stance and novelty · empirical regime percentiles · dated retrieval
- 3. Views                    fitted formula agent (past-only ridge)  |  LLM agent  ->  structured view object
- 4. Allocation               data-derived neutral portfolio -> Black-Litterman -> critic -> [feedback to LLM] -> constrained QP
- 5. Explainability           one JSON + Markdown per decision, nothing post-hoc
- 6. Evaluation               backtest vs baselines · deflated Sharpe · cost curve · attribution · certificate
-```
+
+Three strategies are scored side by side each week: the fitted formula, the LLM clipped, and the LLM told. Two
+yardsticks sit beside them, the neutral portfolio itself and a 60/40 mix.
 
 ## Quickstart
 
