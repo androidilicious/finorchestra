@@ -11,10 +11,11 @@ Duke CAP2027 Team 4 for BNY AI Hub. Public data only.
 ## How one week flows through the system
 
 Every Friday the same six layers run, using only what was public that day. Amber marks the two places a language
-model is involved: scoring each Fed statement's stance (once per statement, cached) and forming the views.
-Everything else is deterministic and inspectable. The dashed edge is the project's new idea: when a rule binds, the
-critic's one-sentence note goes back to the model, which revises, up to two rounds (the "told" strategy). The
-"clipped" strategy takes the same first views and lets the solver trim them without telling the model.
+model is involved: scoring each Fed statement's stance (once per statement, cached; a keyword lexicon stands in under
+the offline mock) and forming the views. Everything else is deterministic and inspectable. The dashed edges are the
+project's new idea: when rules bind, the critic's plain-language notes, one sentence per binding rule, go back to the
+model, which revises, up to two rounds (the "told" strategy). The "clipped" strategy takes the same first views and
+lets the solver trim them without telling the model.
 
 ```mermaid
 flowchart TB
@@ -38,24 +39,25 @@ flowchart TB
     subgraph L4["4 · Allocation"]
         N["neutral portfolio<br/>inverse volatility, computed weekly"]
         BL["Black-Litterman blend<br/>views pull expected returns from the neutral prior"]
-        QP["constrained solver<br/>caps, volatility, duration, capital, turnover<br/>all relative to the neutral portfolio"]
-        CR["deterministic critic<br/>names every rule that binds"]
+        QP["constrained solver<br/>caps, volatility, duration, capital relative to the neutral portfolio<br/>plus a weekly turnover cap"]
+        CR["deterministic critic<br/>names every mandate rule that binds: caps, volatility, duration, capital<br/>turnover is enforced by the solver, never fed back"]
         RV["LLM revises its views<br/>told strategy, up to two rounds"]
     end
     subgraph L5["5 · Explainability"]
-        X["one JSON + Markdown record per decision<br/>nothing post-hoc"]
+        X["one JSON record per decision, Markdown for the latest<br/>nothing post-hoc"]
     end
     subgraph L6["6 · Evaluation"]
-        E["backtest vs neutral portfolio and 60/40<br/>block bootstrap · deflated Sharpe · cost curve<br/>attribution · leakage certificate"]
+        E["backtest vs neutral portfolio and 60/40<br/>block bootstrap between strategies and the neutral portfolio<br/>deflated Sharpe · cost curve · attribution · leakage certificate"]
     end
 
     D1 --> S1
-    D2 --> S1
     D4 --> S1
     D3 --> S4
     S1 --> S2 --> S3
+    S1 -- "ten z-scores and the EPU/GPR z-scores, unaggregated" --> V2
+    D3 -- "two retrieved statements, masked" --> V2
+    D2 -- "next-week returns: the regression targets" --> V1
     S2 --> V1
-    S3 --> V1
     S4 --> V1
     S2 --> V2
     S3 --> V2
@@ -64,9 +66,9 @@ flowchart TB
     V2 --> VO
     D2 --> N --> BL
     VO --> BL --> QP --> CR
-    CR -. "a rule binds: the note goes back" .-> RV
+    CR -. "rules bind: one sentence per rule goes back" .-> RV
     RV -. "revised views re-enter the blend" .-> BL
-    CR -- "no rule binds, or clipped mode" --> W["weights held for one week"]
+    CR -- "fitted or clipped strategy, no rule binds, or both rounds used: the solver's weights stand" --> W["weights held for one week"]
     CR --> X
     W --> E
 
