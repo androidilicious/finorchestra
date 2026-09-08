@@ -19,21 +19,18 @@ critic's one-sentence note goes back to the model, which revises, up to two roun
 ```mermaid
 flowchart TB
     subgraph L1["1 · Data, point-in-time"]
-        direction LR
         D1["FRED / ALFRED vintages<br/>as first published"]
         D2["ETF prices<br/>ten funds"]
         D3["FOMC statements<br/>dated, masked"]
         D4["EPU and GPR<br/>news-count indexes"]
     end
     subgraph L2["2 · Signals"]
-        direction LR
         S1["z-scores against each<br/>series' own 10-year past"]
         S2["theme composites<br/>growth, inflation, policy, financial"]
         S3["regime odds from<br/>empirical percentiles"]
         S4["Fed stance scored by the model,<br/>stance change, novelty"]
     end
     subgraph L3["3 · Views"]
-        direction LR
         V1["fitted formula agent<br/>past-only ridge, refit weekly"]
         V2["LLM agent<br/>masked prompt"]
         VO["structured view object<br/>direction, edge, confidence, evidence"]
@@ -43,6 +40,7 @@ flowchart TB
         BL["Black-Litterman blend<br/>views pull expected returns from the neutral prior"]
         QP["constrained solver<br/>caps, volatility, duration, capital, turnover<br/>all relative to the neutral portfolio"]
         CR["deterministic critic<br/>names every rule that binds"]
+        RV["LLM revises its views<br/>told strategy, up to two rounds"]
     end
     subgraph L5["5 · Explainability"]
         X["one JSON + Markdown record per decision<br/>nothing post-hoc"]
@@ -66,7 +64,8 @@ flowchart TB
     V2 --> VO
     D2 --> N --> BL
     VO --> BL --> QP --> CR
-    CR -. "rule binds: note goes back, model revises (told)" .-> V2
+    CR -. "a rule binds: the note goes back" .-> RV
+    RV -. "revised views re-enter the blend" .-> BL
     CR -- "no rule binds, or clipped mode" --> W["weights held for one week"]
     CR --> X
     W --> E
@@ -74,7 +73,7 @@ flowchart TB
     classDef llm fill:#fbf1de,stroke:#b7791f,color:#17211f
     classDef det fill:#e1efed,stroke:#0f6b66,color:#17211f
     classDef out fill:#f3f1ea,stroke:#6f6e68,color:#17211f
-    class V2,S4 llm
+    class V2,S4,RV llm
     class N,BL,QP,CR,V1 det
     class X,E,W out
 ```
