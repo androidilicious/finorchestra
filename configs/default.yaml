@@ -1,0 +1,211 @@
+# Finorchestra default configuration.
+# Every number here is a modelling choice and is listed, with its basis, in docs/assumptions-register.md.
+# Change any of them and the run id changes with it. Numbers that could be estimated from data or taken from a
+# public source have been: durations, risk weights, the neutral portfolio, the regime probabilities, the covariance
+# shrinkage and the formula agent's loadings no longer appear here.
+
+run:
+  name: default
+  seed: 7
+  start: "2015-01-02"          # first rebalance date (a Friday)
+  end: null                    # null = latest available Friday
+  rebalance_weekday: 4         # 0=Mon ... 4=Fri
+  outputs_dir: outputs
+
+paths:
+  raw: data/raw
+  processed: data/processed
+
+# ---------------------------------------------------------------------------
+# 1. Information sources
+# ---------------------------------------------------------------------------
+fred:
+  api_key_env: FRED_API_KEY    # optional; when absent the ALFRED graph endpoint is used
+  vintage_start: "2005-01-07"  # first Friday for which we reconstruct vintages
+  vintage_chunk: 12            # vintages per ALFRED call; the endpoint silently truncates beyond 12
+  series:
+    # Revised statistical series: full vintage reconstruction.
+    - id: UNRATE
+      name: unemployment_rate
+      revised: true
+    - id: PAYEMS
+      name: nonfarm_payrolls
+      revised: true
+    - id: CPIAUCSL
+      name: cpi
+      revised: true
+    - id: INDPRO
+      name: industrial_production
+      revised: true
+    # Market-determined daily series: never revised. Posted the next business day (H.15 / Cboe), so a
+    # one-business-day availability lag is applied. Never use a monthly-average series here: a value dated the
+    # 1st of a month is only knowable after the month ends.
+    - id: DFF
+      name: fed_funds
+      revised: false
+      lag_days: 1
+    - id: T10Y2Y
+      name: curve_10y2y
+      revised: false
+      lag_days: 1
+    - id: BAA10Y
+      name: credit_spread_baa
+      revised: false
+      lag_days: 1
+    - id: T10YIE
+      name: breakeven_10y
+      revised: false
+      lag_days: 1
+    - id: VIXCLS
+      name: vix
+      revised: false
+      lag_days: 1
+    - id: DGS10                # 10-year Treasury yield: used only to estimate bond-fund durations (not a signal)
+      name: yield_10y
+      revised: false
+      lag_days: 1
+
+market:
+  start: "2007-01-01"
+  universe:
+    - ticker: SPY
+      label: broad domestic equities
+      kind: equity
+    - ticker: TLT
+      label: long-term government bonds (20y+)
+      kind: government_bond
+    - ticker: IEF
+      label: intermediate government bonds (7-10y)
+      kind: government_bond
+    - ticker: TIP
+      label: inflation-protected government bonds
+      kind: inflation_linked_bond
+    - ticker: LQD
+      label: investment-grade corporate bonds
+      kind: corporate_bond
+    - ticker: HYG
+      label: high-yield corporate bonds
+      kind: corporate_bond
+    - ticker: GLD
+      label: gold
+      kind: gold
+    - ticker: DBC
+      label: broad commodities
+      kind: commodity
+    - ticker: UUP
+      label: US dollar vs major currencies
+      kind: currency
+    - ticker: BIL
+      label: cash-like short-term treasury bills
+      kind: cash
+  risk_free_ticker: BIL
+  yield_series: yield_10y      # derived-series name used for empirical durations
+  # kind drives three things with no numbers typed here: (a) which funds get an estimated duration (bond kinds),
+  # (b) the regulatory risk weight (12 CFR 217: US government and gold 0%, corporate 100%, listed equity 300%,
+  # other assets 100%), (c) the mock proposer's playbook. The neutral portfolio is inverse-volatility over the
+  # risky funds, computed from the covariance at each decision date (allocation.benchmark).
+
+text_indices:
+  epu_daily_series: USEPUINDXD
+  epu_lag_days: 2              # business days after the observation before it is usable
+  gpr_daily_file: data/raw/gpr/data_gpr_daily_recent.xls
+  gpr_lag_days: 2
+
+fomc:
+  years: [2007, 2026]          # inclusive range of statement years to scrape
+  lag_days: 0                  # statements release at 14:00 on meeting day; same-day usable
+
+# ---------------------------------------------------------------------------
+# 2. Signal construction
+# ---------------------------------------------------------------------------
+signals:
+  zscore_window_years: 10
+  min_history_years: 5
+  clip: 3.0
+  # Derived macro series computed from raw as-of data before z-scoring.
+  derived:
+    growth_indpro_yoy:   { source: industrial_production, transform: pct_change, periods: 12 }
+    growth_payrolls_3m:  { source: nonfarm_payrolls, transform: pct_change, periods: 3 }
+    labor_unrate_chg_3m: { source: unemployment_rate, transform: diff, periods: 3 }
+    infl_cpi_yoy:        { source: cpi, transform: pct_change, periods: 12 }
+    infl_cpi_3m_ann:     { source: cpi, transform: pct_change_annualized, periods: 3 }
+    infl_breakeven:      { source: breakeven_10y, transform: level }
+    policy_fed_funds:    { source: fed_funds, transform: level }
+    policy_curve:        { source: curve_10y2y, transform: level }
+    fin_credit_spread:   { source: credit_spread_baa, transform: level }
+    fin_vix:             { source: vix, transform: level }
+  themes:
+    growth:    { series: [growth_indpro_yoy, growth_payrolls_3m, labor_unrate_chg_3m], signs: [1, 1, -1] }
+    inflation: { series: [infl_cpi_yoy, infl_cpi_3m_ann, infl_breakeven], signs: [1, 1, 1] }
+    policy:    { series: [policy_fed_funds, policy_curve], signs: [1, -1] }
+    financial: { series: [fin_credit_spread, fin_vix], signs: [1, 1] }
+
+text_signal:
+  provider: same_as_llm        # 'lexicon' forces the offline scorer even when an LLM is configured
+  novelty_ngram: [1, 2]
+
+retrieval:
+  top_k: 2                     # keep prompts under ~2.5k tokens so small local models (4k context) are not truncated
+  max_chars_per_doc: 1400
+  recency_halflife_days: 120
+
+incremental_test:
+  horizons_weeks: [4, 13]
+  targets: [SPY, TLT, HYG]     # forward excess returns regressed on baseline vs baseline+ours
+
+# ---------------------------------------------------------------------------
+# 3. View formation
+# ---------------------------------------------------------------------------
+llm:
+  provider: mock               # mock | openai_compatible
+  base_url: http://localhost:11434/v1
+  api_key_env: FINORCHESTRA_LLM_API_KEY
+  model: qwen2.5:3b
+  temperature: 0.0
+  timeout_s: 120
+  max_retries: 2
+  knowledge_cutoff: "2024-10-01"   # declared training cutoff of the configured model; used in the certificate
+  masking: true
+
+fitted_agent:
+  # The "formula" strategy: a past-only ridge regression of forward excess returns on the signal features, refit at
+  # every decision date, with the ridge penalty chosen by leave-one-out cross-validation over ridge_alphas. It replaces
+  # the hand-written loading table and regime multipliers of the first version.
+  horizon_weeks: 4             # forward-return horizon the regression predicts (also the incremental test's first horizon)
+  features: [theme_growth, theme_inflation, theme_policy, theme_financial, fed_stance, fed_stance_change, fed_novelty]
+  ridge_alphas: [0.1, 1.0, 10.0, 100.0, 1000.0]
+  min_train_weeks: 156         # three years of history before the first fitted view
+  max_views: 6                 # same ceiling the language model is given
+
+allocation:
+  cov_window_weeks: 104        # trailing weekly returns for the covariance (also the duration-estimation window)
+  # covariance shrinkage intensity is estimated (Ledoit-Wolf 2004), not set
+  risk_aversion: 3.0           # delta in Black-Litterman and the optimiser; He-Litterman / Idzorek range 2.25-3.1
+  turnover_penalty: 0.002      # per unit of one-way turnover, in expected-return units (about 20 bp)
+  feedback_rounds: 2           # LLM agent revision rounds when a mandate limit binds
+  benchmark: inverse_vol       # neutral portfolio: inverse-volatility over risky funds, from data; or equal_weight
+  mandate:                     # the bank's rules, relative to the neutral portfolio. PLACEHOLDERS until BNY supplies its own.
+    long_only: true
+    fully_invested: true
+    active_weight_band: 0.15   # no fund more than 15 points away from its neutral weight (cash included)
+    volatility_allowance: 0.25 # portfolio volatility at most 1.25x the neutral portfolio's
+    duration_band_years: 2.0   # portfolio duration within 2 years of the neutral portfolio's
+    capital_allowance: 0.25    # regulatory risk-weighted exposure at most 1.25x the neutral portfolio's
+    max_one_way_turnover: 0.25 # at most 25% of the book traded per week
+
+# ---------------------------------------------------------------------------
+# 6. Evaluation
+# ---------------------------------------------------------------------------
+evaluation:
+  cost_bps_grid: [0, 5, 10, 20, 30]
+  strategies: [rule, llm_clip, llm_feedback]
+  baselines: [benchmark, sixty_forty]   # benchmark = the same neutral portfolio the prior and mandate use
+  bootstrap_blocks_weeks: 8
+  bootstrap_draws: 2000
+  # deflated Sharpe: trials = number of strategies; dispersion = measured across those strategies (no prior)
+  attribution_factors:
+    MKT: { long: SPY, short: BIL }
+    DUR: { long: TLT, short: BIL }
+    CRD: { long: HYG, short: IEF }
+    CMD: { long: DBC, short: BIL }
+    USD: { long: UUP, short: BIL }

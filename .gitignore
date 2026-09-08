@@ -1,0 +1,31 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+data/processed/
+data/raw/market/
+data/raw/fred/vintages/
+data/raw/fomc/
+outputs/
+.env
+*.egg-info/
+*.log
+data/raw/epu/replication/
+data/raw/gpr/docs/
+# env variants (keep the template)
+.env.*
+!.env.example
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+# tooling caches and build output
+.ipynb_checkpoints/
+.mypy_cache/
+.coverage
+htmlcov/
+dist/
+build/
+node_modules/

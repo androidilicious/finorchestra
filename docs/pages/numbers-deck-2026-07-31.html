@@ -1,0 +1,244 @@
+<title>Finorchestra Numbers Deck</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root { color-scheme: light; --ground: #f3f1ea; --surface: #fbfaf6; --ink: #17211f; --ink2: #4b524f; --muted: #6f6e68; --line: #d9d6cc; --line2: #e9e6dc; --accent: #0f6b66; --accent-soft: #e1efed; --amber: #b7791f; --amber-soft: #fbf1de; --red: #a5462a; --red-soft: #f4e5df; --shadow: 0 1px 2px rgba(0,0,0,.05), 0 8px 24px rgba(0,0,0,.06); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { color-scheme: dark; --ground: #121615; --surface: #1a201e; --ink: #ece9e0; --ink2: #b9b6ac; --muted: #8d8b82; --line: #2d3431; --line2: #232927; --accent: #4fb3ac; --accent-soft: #14302e; --amber: #e0b040; --amber-soft: #3a2c14; --red: #e0714f; --red-soft: #3a2119; --shadow: none; } }
+  :root[data-theme="dark"] { color-scheme: dark; --ground: #121615; --surface: #1a201e; --ink: #ece9e0; --ink2: #b9b6ac; --muted: #8d8b82; --line: #2d3431; --line2: #232927; --accent: #4fb3ac; --accent-soft: #14302e; --amber: #e0b040; --amber-soft: #3a2c14; --red: #e0714f; --red-soft: #3a2119; --shadow: none; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ground); color: var(--ink); font: 17px/1.55 "IBM Plex Sans", system-ui, sans-serif; }
+  .deck { min-height: 100vh; display: flex; flex-direction: column; }
+  .stage { flex: 1; display: flex; padding: 22px 22px 0; }
+  .slide { display: none; flex: 1; background: var(--surface); border-radius: 8px; box-shadow: var(--shadow); padding: clamp(22px, 4vw, 52px) clamp(22px, 5vw, 68px); max-width: 1180px; margin: 0 auto; width: 100%; overflow-y: auto; }
+  .slide.active { display: flex; flex-direction: column; }
+  .deck.scroll .stage { display: block; }
+  .deck.scroll .slide { display: flex; flex-direction: column; margin-bottom: 22px; }
+  .deck.scroll .nav { display: none; }
+  .nav { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 14px; color: var(--muted); font-size: 13.5px; }
+  .nav button, .nav select { font: inherit; padding: 6px 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink); cursor: pointer; }
+  .nav button:hover { border-color: var(--accent); }
+  h1, h2 { font-family: "Source Serif 4", Georgia, serif; font-weight: 600; letter-spacing: -.01em; text-wrap: balance; margin: 0 0 12px; }
+  h1 { font-size: clamp(32px, 4.5vw, 50px); line-height: 1.1; }
+  h2 { font-size: clamp(24px, 3vw, 34px); line-height: 1.15; }
+  .eyebrow, .kicker { font-family: "IBM Plex Mono", monospace; font-size: 12.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+  .lede { font-size: 20px; color: var(--ink2); max-width: 64ch; }
+  .legendnote, .hint, .small { color: var(--muted); font-size: 14px; }
+  .big { font-size: 19px; font-weight: 500; max-width: 60ch; }
+  p { margin: 0 0 12px; max-width: 70ch; }
+  ul { margin: 0 0 12px; padding-left: 20px; } li { margin-bottom: 5px; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
+  @media (max-width: 820px) { .cols { grid-template-columns: 1fr; } }
+  .def { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 11px 14px; border-radius: 0 6px 6px 0; margin: 12px 0; }
+  .def.amber { border-color: var(--amber); background: var(--amber-soft); }
+  .def.red { border-color: var(--red); background: var(--red-soft); }
+  .def .term { display: block; font-family: "IBM Plex Mono", monospace; font-size: 12.5px; color: var(--accent); margin-bottom: 4px; }
+  .def.amber .term { color: var(--amber); } .def.red .term { color: var(--red); }
+  .def p { margin: 0; font-size: 15.5px; } .def ul { margin: 0; font-size: 15.5px; }
+  .tablewrap { overflow-x: auto; margin: 8px 0 14px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; font-variant-numeric: tabular-nums; }
+  th, td { text-align: left; padding: 7px 9px; border-bottom: 1px solid var(--line2); vertical-align: top; }
+  th { font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 600; }
+  td.n, th.n { text-align: right; font-family: "IBM Plex Mono", monospace; white-space: nowrap; }
+  .msg { background: var(--ground); border: 1px solid var(--line2); border-left: 3px solid var(--amber); border-radius: 6px; padding: 8px 10px; font: 12.5px/1.45 "IBM Plex Mono", monospace; margin: 6px 0; overflow-wrap: anywhere; }
+  dfn.hov { font-style: normal; cursor: help; text-decoration: underline dotted; text-decoration-color: var(--accent); text-underline-offset: 3px; }
+  dfn.hov:hover, dfn.hov:focus-visible, dfn.hov.on { background: var(--accent-soft); outline: none; border-radius: 2px; }
+  #termtip { position: fixed; z-index: 50; max-width: 340px; background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 6px; box-shadow: 0 6px 18px rgba(0,0,0,.14); padding: 10px 14px; font-size: 13.5px; line-height: 1.45; display: none; pointer-events: none; }
+  #termtip b { display: block; font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--accent); margin-bottom: 3px; font-weight: 500; }
+  .title-slide { justify-content: center; }
+</style>
+<div class="deck" id="deck">
+  <div class="stage">
+<section class="slide title-slide active" data-section="Start">
+  <div class="kicker">Duke CAP2027 · Team 4 · for BNY AI Hub · run openai-postcutoff-v3-3baad69b</div>
+  <h1>Finorchestra: where every number comes from</h1>
+  <p class="lede">One real Friday, 2026-07-31, followed from the raw data to the final split. Every number on these slides is the one the system recorded that day, and each slide says how it was computed.</p>
+  <p class="legendnote">Words with a dotted line, like <dfn class="hov" data-key="volatility">volatility</dfn>, have a one-line meaning. Hover, tap, or tab to them.</p>
+  <p class="hint">Arrow keys or the buttons below. "Scroll view" makes one long page.</p>
+</section>
+<section class="slide " data-section="The job"><div class="eyebrow">The job</div><h2>Every Friday, split one dollar across ten funds</h2>
+<div class="cols"><div>
+<p class="big">Use only facts that were public that day. Obey the bank's rules. Hold for one week. Repeat.</p>
+<p>We did this on 114 Fridays, from 2024-07-05 to 2026-09-04. Every one of those dates comes after the AI model's training ended. So it could not remember what happened next.</p>
+<p>Three players make the split each week. Two simple yardsticks sit beside them. At the end we compare what each earned.</p>
+</div><div>
+<div class="def"><span class="term">why "public that day" matters</span><p>Numbers on the economy get revised later. We use the first version, as it stood that Friday. Using today's revised number would be cheating.</p></div>
+<div class="def"><span class="term">why one week</span><p>Prices are checked on Friday close. The split is held until the next Friday close. That gives one return per week.</p></div>
+</div></div></section>
+<section class="slide " data-section="The players"><div class="eyebrow">The players</div><h2>Three ways to decide, two ways to compare</h2>
+<div class="cols"><div>
+<div class="def"><span class="term">Player 1 · the fitted formula</span><p>A regression fitted on past weeks only, refit every Friday. It has no opinion of its own. It is the floor.</p></div>
+<div class="def amber"><span class="term">Player 2 · AI, clipped</span><p>A language model reads the numbers and the Fed's words. It gives views. The <dfn class="hov" data-key="solver">solver</dfn> trims them to fit the rules. The model is not told.</p></div>
+<div class="def"><span class="term">Player 3 · AI, told</span><p>Same first views. When a rule binds, a checker writes one sentence back. The model revises, up to twice.</p></div>
+</div><div>
+<div class="def"><span class="term">Yardstick A · the neutral mix</span><p>A split computed from data each week with no opinion in it. Every rule is measured against it. Holding it is "do nothing".</p></div>
+<div class="def"><span class="term">Yardstick B · 60/40</span><p>60% stocks, 40% mid Treasury bonds. The classic simple mix. It ignores the bank's rules.</p></div>
+<p class="small">The point of the test: does a reasoning layer add value over a formula? And does telling it about the rules help?</p>
+</div></div></section>
+<section class="slide " data-section="The funds"><div class="eyebrow">The funds</div><h2>The ten funds, and what kind of thing each one is</h2><div class="tablewrap"><table><thead><tr><th>Ticker</th><th>Plain name</th><th>Kind</th></tr></thead><tbody><tr><td>SPY</td><td>US stocks</td><td>stock fund</td></tr><tr><td>TLT</td><td>long Treasury bonds</td><td>government bond</td></tr><tr><td>IEF</td><td>mid Treasury bonds</td><td>government bond</td></tr><tr><td>TIP</td><td>inflation-protected bonds</td><td>government bond, inflation-linked</td></tr><tr><td>LQD</td><td>investment-grade corporate bonds</td><td>corporate bond</td></tr><tr><td>HYG</td><td>high-yield corporate bonds</td><td>corporate bond</td></tr><tr><td>GLD</td><td>gold</td><td>gold</td></tr><tr><td>DBC</td><td>commodities</td><td>commodities</td></tr><tr><td>UUP</td><td>US dollar</td><td>currency</td></tr><tr><td>BIL</td><td>cash (T-bills)</td><td>cash</td></tr></tbody></table></div><p class="small">The kind matters later. Bond funds get a measured duration. The kind also sets the capital charge under the US bank rule.</p></section>
+<section class="slide " data-section="Step 1 · Data"><div class="eyebrow">Step 1 · Data</div><h2>What was known on 2026-07-31</h2>
+<div class="cols"><div>
+<p>Four sources. All are public.</p>
+<div class="tablewrap"><table><thead><tr><th>Source</th><th>What it gives us</th></tr></thead><tbody><tr><td>FRED</td><td>Nine series on the economy, as first published, plus the 10-year yield used only in Step 9</td></tr><tr><td>Fund prices</td><td>Daily closes of the ten funds</td></tr><tr><td>Fed statements</td><td>All of them so far. Latest: 2026-07-29, 2 days old</td></tr><tr><td>Two news indexes</td><td>Policy-uncertainty index and geopolitical-risk index, from newspaper counts</td></tr></tbody></table></div>
+</div><div>
+<div class="tablewrap"><table><thead><tr><th>Latest reading</th><th class=n>Value</th></tr></thead><tbody><tr><td>Inflation, CPI over 12 months</td><td class=n>3.73%</td></tr><tr><td>Inflation, CPI over 3 months, stated per year</td><td class=n>2.78%</td></tr><tr><td><dfn class="hov" data-key="breakeven">10-year inflation expectation</dfn></td><td class=n>2.27%</td></tr><tr><td><dfn class="hov" data-key="Fed funds rate">Fed funds rate</dfn></td><td class=n>3.63%</td></tr><tr><td><dfn class="hov" data-key="yield curve">Yield curve (10-year minus 2-year)</dfn></td><td class=n>0.45 pts</td></tr><tr><td><dfn class="hov" data-key="credit spread">Credit spread</dfn></td><td class=n>1.64 pts</td></tr><tr><td><dfn class="hov" data-key="VIX">VIX</dfn></td><td class=n>17.1</td></tr><tr><td>Unemployment change, 3 months</td><td class=n>-0.10 pts</td></tr><tr><td>Industrial output, 12-month growth</td><td class=n>1.14%</td></tr><tr><td>Payrolls, growth over 3 months</td><td class=n>0.21%</td></tr><tr><td>Policy-uncertainty index (news count)</td><td class=n>307</td></tr><tr><td>Geopolitical-risk index (news count)</td><td class=n>186</td></tr></tbody></table></div>
+<p class="small">CPI is used twice, over 12 months and over 3 months. So nine series give the ten z-scores of Step 2. The two news indexes go to the model as z-scores too.</p>
+</div></div></section>
+<section class="slide " data-section="Step 2 · Z-scores"><div class="eyebrow">Step 2 · Z-scores</div><h2>How unusual is each number? The z-score</h2>
+<p class="big">z-score = (today's value − its 10-year average) ÷ its 10-year <dfn class="hov" data-key="standard deviation">spread</dfn></p>
+<p>The spread is the <dfn class="hov" data-key="standard deviation">standard deviation</dfn>: the typical distance from the average. A z of 0 is normal. A z of 2 is rare. The average and spread use only the 10 years before today's reading.</p>
+<div class="tablewrap"><table><thead><tr><th>Series</th><th class=n>Today</th><th class=n>10-year average</th><th class=n>10-year spread</th><th class=n>z-score</th></tr></thead><tbody><tr><td>CPI inflation, 12 months</td><td class=n>3.73%</td><td class=n>3.25%</td><td class=n>2.06 pts</td><td class=n>+0.23</td></tr><tr><td>Fed funds rate</td><td class=n>3.63%</td><td class=n>2.38%</td><td class=n>1.88 pts</td><td class=n>+0.66</td></tr><tr><td>VIX</td><td class=n>17.1</td><td class=n>18.6</td><td class=n>7.3</td><td class=n>-0.21</td></tr></tbody></table></div>
+<p>Worked line: CPI is 3.73%. Its 10-year average is 3.25%. Its spread is 2.06 points. (3.73 − 3.25) ÷ 2.06 = +0.23. Inflation is a touch above normal.</p>
+<p class="small">All ten z-scores that day: industrial output, 12-month growth +0.22; payrolls, 3-month growth -0.03; unemployment change, 3 months -0.05; CPI, 12 months +0.23; CPI, 3 months stated per year -0.24; 10-year inflation expectation +0.48; Fed funds rate +0.66; yield curve +0.17; credit spread -0.97; VIX -0.21.</p></section>
+<section class="slide " data-section="Step 3 · Themes"><div class="eyebrow">Step 3 · Themes</div><h2>Four themes: average the z-scores that belong together</h2>
+<div class="cols"><div>
+<div class="tablewrap"><table><thead><tr><th>Theme</th><th>Made of</th><th class=n>Value</th></tr></thead><tbody><tr><td>growth</td><td>industrial output (+), payrolls (+), unemployment change (−)</td><td class=n>+0.08</td></tr><tr><td>inflation</td><td>CPI 12-month (+), CPI 3-month (+), inflation expectation (+)</td><td class=n>+0.16</td></tr><tr><td>policy</td><td>Fed funds rate (+), yield curve (−)</td><td class=n>+0.25</td></tr><tr><td>financial stress</td><td>credit spread (+), VIX (+)</td><td class=n>-0.59</td></tr></tbody></table></div>
+</div><div>
+<p>Each theme is the plain average of its z-scores. A minus sign flips a series first. Rising unemployment is bad for growth, so it is flipped. A steeper curve means easier money, so it is flipped inside "policy".</p>
+<p>Worked line: growth = (+0.22 -0.03 +0.05) ÷ 3 = +0.08.</p>
+<div class="def amber"><span class="term">what is assumed here</span><p>Which series sit in which theme, and the signs. That is a judgement call, written down in the register. The averaging is not.</p></div>
+</div></div></section>
+<section class="slide " data-section="Step 4 · Regime"><div class="eyebrow">Step 4 · Regime</div><h2>Which season is the economy in? Odds from the past</h2>
+<p class="big">Chance that growth is "up" = share of past weeks that had a lower growth theme.</p>
+<div class="cols"><div>
+<p>We keep every past week's theme values. Today's growth theme is +0.08. It is higher than 148 of the 276 past weeks and equal to 2 more, which count half. So the chance that growth is up is about 54%.</p>
+<p>Today's inflation theme is +0.16. It is higher than only 41 of 276 past weeks. So the chance that inflation is up is about 15%.</p>
+<p>No dial is set by hand. The past decides.</p>
+</div><div>
+<div class="tablewrap"><table><thead><tr><th>Season</th><th>Growth</th><th>Inflation</th><th class=n>Odds</th><th>Arithmetic</th></tr></thead><tbody><tr><td>goldilocks</td><td>up</td><td>down</td><td class=n>46%</td><td>0.54 × 0.85</td></tr><tr><td>overheating</td><td>up</td><td>up</td><td class=n>8%</td><td>0.54 × 0.15</td></tr><tr><td>stagflation</td><td>down</td><td>up</td><td class=n>7%</td><td>0.46 × 0.15</td></tr><tr><td>recession</td><td>down</td><td>down</td><td class=n>39%</td><td>0.46 × 0.85</td></tr></tbody></table></div>
+<p class="small">That week the two most likely seasons were goldilocks (46%) and recession (39%). Inflation looked low against its own past 5 years, which had the 2022 surge in them.</p>
+</div></div></section>
+<section class="slide " data-section="Step 5 · Fed words"><div class="eyebrow">Step 5 · Fed words</div><h2>What the Fed said, as two numbers</h2>
+<div class="cols"><div>
+<div class="def"><span class="term">stance = +0.30</span><p>The model reads the latest statement with dates and numbers masked. It gives a score from −1 (easing) to +1 (tightening). Scored once per statement and cached.</p></div>
+<div class="def"><span class="term">novelty = 0.06</span><p>How much the wording changed since the previous statement. 0 means identical. 1 means nothing in common. This one shares 94% of its words with the last one.</p></div>
+<p class="small">Stance change = +0.30. Both numbers go to the formula and to the model as they are. We do not mix them into one made-up score.</p>
+</div><div>
+<p>Phrases the scorer keyed on:</p><div class="tablewrap"><table><thead><tr><th>Quote from the statement</th></tr></thead><tbody><tr><td>maintain the target range for the federal funds rate at about 3.5 to 4 percent</td></tr><tr><td>economic activity is expanding at a solid pace</td></tr><tr><td>inflation remains elevated relative to the Committee's about 2 percent goal</td></tr><tr><td>job gains have kept pace with the workforce</td></tr><tr><td>The Committee will deliver price stability</td></tr><tr><td>elevated uncertainty that owes, in part, to the conflict in the Middle East</td></tr></tbody></table></div></div></div></section>
+<section class="slide " data-section="Step 6 · Risk"><div class="eyebrow">Step 6 · Risk</div><h2>What we mean by risk: <dfn class="hov" data-key="volatility">volatility</dfn> and <dfn class="hov" data-key="correlation">correlation</dfn></h2>
+<p class="big">Volatility = the spread of a fund's weekly returns × √52.</p>
+<div class="cols"><div>
+<p>Take the last 104 weekly returns (2024-08-09 to 2026-07-31). Find their spread. Multiply by √52, about 7.2, to state it per year. The spread here divides by the number of weeks, 104, as the shrinkage method below does. So the two columns match.</p>
+<div class="tablewrap"><table><thead><tr><th>Fund</th><th class=n>Weekly spread</th><th>× √52</th><th class=n>Yearly volatility</th></tr></thead><tbody><tr><td>US stocks</td><td class=n>2.145%</td><td>→</td><td class=n>15.5%</td></tr><tr><td>long Treasury bonds</td><td class=n>1.620%</td><td>→</td><td class=n>11.7%</td></tr><tr><td>inflation-protected bonds</td><td class=n>0.550%</td><td>→</td><td class=n>4.0%</td></tr><tr><td>gold</td><td class=n>2.715%</td><td>→</td><td class=n>19.6%</td></tr><tr><td>cash (T-bills)</td><td class=n>0.015%</td><td>→</td><td class=n>0.1%</td></tr></tbody></table></div>
+</div><div>
+<p>Correlation is how two funds move together. It runs from −1 to +1. Inflation-protected and mid Treasury bonds: +0.90 as measured, +0.71 after the pull-in below. Stocks and long Treasuries: -0.04 as measured, +0.01 after.</p>
+<div class="def"><span class="term"><dfn class="hov" data-key="shrinkage">shrinkage</dfn> = 25%</span><p>104 weeks is a small sample. So each pair's link is noisy. We pull each one 25% of the way toward the average link, which was +0.15 that window. Each fund keeps its own risk. A known method sets the amount (Ledoit and Wolf, 2004). We do not.</p></div>
+</div></div></section>
+<section class="slide " data-section="Step 7 · Neutral mix"><div class="eyebrow">Step 7 · Neutral mix</div><h2>The neutral mix: weight each fund by one over its volatility</h2>
+<div class="cols"><div>
+<p class="big">weight = (1 ÷ volatility) ÷ the sum of all the (1 ÷ volatility)</p>
+<p>Calm funds get more. Jumpy funds get less. Cash is left out: it is where the solver retreats to, not a position to be neutral in. The sum of the nine "1 ÷ volatility" values is 123.7.</p>
+<p>Worked line: inflation-protected bonds: 1 ÷ 3.97% = 25.2. Then 25.2 ÷ 123.7 = 20.4%.</p>
+<div class="def"><span class="term">why this and not "market weights"</span><p>Version 1 typed in a market mix by hand. Nobody could say where it came from. This one is computed from data each week with no numbers typed in.</p></div>
+</div><div>
+<div class="tablewrap"><table><thead><tr><th>Fund</th><th class=n>Volatility</th><th class=n>1 ÷ vol</th><th class=n>Neutral weight</th></tr></thead><tbody><tr><td>US stocks</td><td class=n>15.47%</td><td class=n>6.5</td><td class=n>5.2%</td></tr><tr><td>long Treasury bonds</td><td class=n>11.68%</td><td class=n>8.6</td><td class=n>6.9%</td></tr><tr><td>mid Treasury bonds</td><td class=n>5.74%</td><td class=n>17.4</td><td class=n>14.1%</td></tr><tr><td>inflation-protected bonds</td><td class=n>3.97%</td><td class=n>25.2</td><td class=n>20.4%</td></tr><tr><td>investment-grade corporate bonds</td><td class=n>6.30%</td><td class=n>15.9</td><td class=n>12.8%</td></tr><tr><td>high-yield corporate bonds</td><td class=n>4.05%</td><td class=n>24.7</td><td class=n>20.0%</td></tr><tr><td>gold</td><td class=n>19.58%</td><td class=n>5.1</td><td class=n>4.1%</td></tr><tr><td>commodities</td><td class=n>17.86%</td><td class=n>5.6</td><td class=n>4.5%</td></tr><tr><td>US dollar</td><td class=n>6.77%</td><td class=n>14.8</td><td class=n>11.9%</td></tr></tbody></table></div>
+</div></div></section>
+<section class="slide " data-section="Step 8 · Rules"><div class="eyebrow">Step 8 · Rules</div><h2>The bank's rules, each one built from the neutral mix</h2>
+<div class="cols"><div>
+<div class="tablewrap"><table><thead><tr><th>Rule</th><th>How it is built</th><th>That week</th></tr></thead><tbody><tr><td>Cap per fund</td><td>neutral weight + 15 points</td><td>inflation-protected bonds: 20.4% + 15 = 35.4%; long Treasury bonds: 6.9% + 15 = 21.9%</td></tr><tr><td>Volatility</td><td>neutral mix volatility × 1.25</td><td>3.77% × 1.25 = 4.71%</td></tr><tr><td>Duration</td><td>neutral mix duration ± 2 years</td><td>4.24 ± 2 = 2.24 to 6.24 years</td></tr><tr><td>Capital</td><td>neutral mix capital use × 1.25</td><td>0.65 × 1.25 = 0.81</td></tr><tr><td>Trading</td><td>at most 25% of the book per week</td><td>25%</td></tr></tbody></table></div>
+<div class="def amber"><span class="term">the five placeholders</span><p>15 points, 1.25, 2 years, 1.25 and 25% are the only rule numbers. They stand in for the bank's real policy limits. BNY should set them.</p></div>
+</div><div>
+<p><b>Capital use</b> follows the US bank-capital rule (12 CFR 217). Each fund's weight is multiplied by its <dfn class="hov" data-key="risk weight">risk weight</dfn>: government bonds, cash and gold 0%; corporate bonds, commodities and currency 100%; listed stocks 300%.</p>
+<div class="tablewrap"><table><thead><tr><th>Fund</th><th class=n>Neutral weight</th><th class=n>Risk weight</th><th class=n>Weight × risk weight</th></tr></thead><tbody><tr><td>US stocks</td><td class=n>5.2%</td><td class=n>300%</td><td class=n>0.157</td></tr><tr><td>investment-grade corporate bonds</td><td class=n>12.8%</td><td class=n>100%</td><td class=n>0.128</td></tr><tr><td>high-yield corporate bonds</td><td class=n>20.0%</td><td class=n>100%</td><td class=n>0.200</td></tr><tr><td>commodities</td><td class=n>4.5%</td><td class=n>100%</td><td class=n>0.045</td></tr><tr><td>US dollar</td><td class=n>11.9%</td><td class=n>100%</td><td class=n>0.119</td></tr></tbody></table></div>
+<p class="small">Sum = 0.65. Government bonds and gold add nothing. Times 1.25 gives the budget 0.81.</p>
+</div></div></section>
+<section class="slide " data-section="Step 9 · Duration"><div class="eyebrow">Step 9 · Duration</div><h2><dfn class="hov" data-key="Duration">Duration</dfn>: how hard a bond fund moves when rates move</h2>
+<div class="cols"><div>
+<p class="big">Duration ≈ percent price move for a one-point move in yields.</p>
+<p>We estimate it from data. Take the fund's 104 weekly returns and the weekly change in the 10-year Treasury yield. Fit a line. The slope, with its sign flipped, is the duration.</p>
+<p>Worked line: long Treasury bonds: slope -14.3, so duration 14.3 years. A one-point rise in yields cost about 14% that window.</p>
+<p>Stocks, gold, commodities and the dollar get 0 by rule. Duration is a bond idea; a fitted number for gold would be noise.</p>
+</div><div>
+<div class="tablewrap"><table><thead><tr><th>Fund</th><th>Kind</th><th class=n>Duration (years)</th></tr></thead><tbody><tr><td>US stocks</td><td>stock fund</td><td class=n>0.0</td></tr><tr><td>long Treasury bonds</td><td>government bond</td><td class=n>14.3</td></tr><tr><td>mid Treasury bonds</td><td>government bond</td><td class=n>7.3</td></tr><tr><td>inflation-protected bonds</td><td>government bond, inflation-linked</td><td class=n>4.5</td></tr><tr><td>investment-grade corporate bonds</td><td>corporate bond</td><td class=n>7.2</td></tr><tr><td>high-yield corporate bonds</td><td>corporate bond</td><td class=n>1.9</td></tr><tr><td>gold</td><td>gold</td><td class=n>0.0</td></tr><tr><td>commodities</td><td>commodities</td><td class=n>0.0</td></tr><tr><td>US dollar</td><td>currency</td><td class=n>0.0</td></tr><tr><td>cash (T-bills)</td><td>cash</td><td class=n>0.0</td></tr></tbody></table></div>
+<p class="small">Neutral mix duration = Σ weight × duration = 4.24 years. Version 1 typed these numbers in from fact sheets; two were stale.</p>
+</div></div></section>
+<section class="slide " data-section="Step 10 · The AI's views"><div class="eyebrow">Step 10 · The AI's views</div><h2>What the model said on 2026-07-31</h2>
+<div class="tablewrap"><table><thead><tr><th>Fund</th><th>View</th><th class=n>Edge per year</th><th class=n>Confidence</th><th>Its first reason</th></tr></thead><tbody><tr><td>US stocks</td><td>no view</td><td class=n>+0.0%</td><td class=n>0.50</td><td>growth theme slightly positive (0.079)</td></tr><tr><td>long Treasury bonds</td><td>less</td><td class=n>-2.0%</td><td class=n>0.70</td><td>policy stance hawkish (fed_funds 0.665, fed_stance 0.3)</td></tr><tr><td>inflation-protected bonds</td><td>more</td><td class=n>+3.0%</td><td class=n>0.60</td><td>inflation breakeven elevated (0.48)</td></tr><tr><td>high-yield corporate bonds</td><td>no view</td><td class=n>+0.0%</td><td class=n>0.40</td><td>financial stress very low (credit spread -0.968)</td></tr><tr><td>US dollar</td><td>more</td><td class=n>+2.0%</td><td class=n>0.60</td><td>Fed policy hawkish (fed_funds 0.665, fed_stance 0.3)</td></tr></tbody></table></div>
+<p class="small">"Edge per year" is the model's guess at return above cash. Confidence runs from 0 to 1. Its one-line read of the week:</p>
+<div class="msg">The economy is in a mixed regime with moderate growth, elevated inflation, hawkish policy, low financial stress, and high geopolitical risk, with a 46% probability of goldilocks and 39% recession.</div>
+<p class="small">Where its words come from. "Elevated inflation" is the model reading the Fed's own phrase (inflation above the 2% goal, Step 5), not the CPI z-score of +0.23 from Step 2. "Geopolitical risk" is the geopolitical-risk index from Step 1, at z +1.59. The short names in its reasons are the Step 2 z-scores: fed_funds is the Fed funds rate (+0.66), credit spread is -0.97, growth theme is the Step 3 value.</p>
+<p class="small">The prompt hid tickers behind letters and rounded the rates. So the model could not spot the date. Both AI players start from this same list.</p></section>
+<section class="slide " data-section="Step 11 · Blend"><div class="eyebrow">Step 11 · Blend</div><h2>Turning views into expected returns (Black-Litterman)</h2>
+<div class="cols"><div>
+<p class="big">Start from the returns that would make the neutral mix the best choice. Pull each fund toward the model's view, by its confidence.</p>
+<p>The starting returns are the "prior". Funds that move together move together here too: a view on one bond shifts the others a little.</p>
+<p>Then ask: with no rules at all, what split do these returns want? The last column. It wants 511% in inflation-protected bonds, 120% short in long Treasury bonds, and it borrows 449% of the book in cash to pay for it. Nobody can hold that. That is why the next step exists.</p>
+</div><div>
+<div class="tablewrap"><table><thead><tr><th>Fund</th><th class=n>Prior, per year</th><th class=n>After views</th><th class=n>Wanted, no rules</th></tr></thead><tbody><tr><td>US stocks</td><td class=n>0.75%</td><td class=n>1.28%</td><td class=n>5%</td></tr><tr><td>long Treasury bonds</td><td class=n>0.93%</td><td class=n>0.23%</td><td class=n>-120%</td></tr><tr><td>inflation-protected bonds</td><td class=n>0.34%</td><td class=n>1.46%</td><td class=n>511%</td></tr><tr><td>high-yield corporate bonds</td><td class=n>0.31%</td><td class=n>0.61%</td><td class=n>20%</td></tr><tr><td>US dollar</td><td class=n>0.09%</td><td class=n>1.21%</td><td class=n>98%</td></tr></tbody></table></div>
+<p class="small"><dfn class="hov" data-key="risk aversion">Risk aversion</dfn> is set to 3, a value from the published range (He and Litterman 1999). It scales the prior; it does not pick favourites.</p>
+</div></div></section>
+<section class="slide " data-section="Step 12a · Clipped"><div class="eyebrow">Step 12a · Clipped</div><h2>Player 2: the solver fits the views to the rules. Nobody tells the model.</h2>
+<div class="cols"><div>
+<div class="tablewrap"><table><thead><tr><th>Fund</th><th class=n>Held</th><th class=n>Cap that week</th></tr></thead><tbody><tr><td>US stocks</td><td class=n>5.6%</td><td class=n>20.2%</td></tr><tr><td>mid Treasury bonds</td><td class=n>10.8%</td><td class=n>29.1%</td></tr><tr><td>inflation-protected bonds</td><td class=n>35.4%</td><td class=n>35.4%</td></tr><tr><td>investment-grade corporate bonds</td><td class=n>12.8%</td><td class=n>27.8%</td></tr><tr><td>commodities</td><td class=n>8.6%</td><td class=n>19.5%</td></tr><tr><td>US dollar</td><td class=n>26.9%</td><td class=n>26.9%</td></tr></tbody></table></div>
+<p class="small">Volatility 3.51% of 4.71% allowed. Duration 3.31 in 2.24 to 6.24. Capital 0.65 of 0.81. Traded 19.6% of the book.</p>
+</div><div>
+<p>The checker then tests the result and writes what it found. Its notes cover the caps and the volatility, duration and capital rules. The trading limit is applied by the solver itself and is not written up. On this path the notes go to the log only:</p>
+<div class="msg">TIP (inflation-protected government bonds) is pinned at its active-band cap of 35.4% (neutral weight 20.4% plus 15%); the views asked for more</div><div class="msg">UUP (US dollar vs major currencies) is pinned at its active-band cap of 26.9% (neutral weight 11.9% plus 15%); the views asked for more</div>
+<p class="small">Read the first note. It is about inflation-protected bonds, held at 35.4%. That is the neutral weight 20.4% plus the 15-point band. The model wanted more and got cut.</p>
+</div></div></section>
+<section class="slide " data-section="Step 12b · Told"><div class="eyebrow">Step 12b · Told</div><h2>Player 3: the checker's note goes back, the model revises</h2>
+<div class="cols"><div>
+<p>Same first views. The checker's note is added to the chat. The model is asked to revise. That happened 1 time this week.</p>
+<div class="tablewrap"><table><thead><tr><th>Round</th><th>What the checker wrote</th><th>Views after revision</th></tr></thead><tbody><tr><td>Round 1</td><td>TIP (inflation-protected government bonds) is pinned at its active-band cap of 35.4% (neutral weight 20.4% plus 15%); th…</td><td>long Treasury bonds less -2.0% (conf 0.70); mid Treasury bonds more +1.5% (conf 0.50)</td></tr></tbody></table></div>
+<p class="small">After the last round, no cap, volatility, duration or capital rule bound. The 25% trading limit did trim the trade. That limit is applied by the solver itself and is not sent back to the model. The model's own reason:</p><div class="msg">Given the active-band caps on inflation-protected bonds and the US dollar, we reduce their recommended overweight to neutral while maintaining positive views. We shift some duration exposure from long-term to intermediate government bonds to reflect hawkish po…</div>
+</div><div>
+<div class="tablewrap"><table><thead><tr><th>Fund</th><th class=n>Told</th><th class=n>Clipped</th></tr></thead><tbody><tr><td>US stocks</td><td class=n>7.2%</td><td class=n>5.6%</td></tr><tr><td>mid Treasury bonds</td><td class=n>23.8%</td><td class=n>10.8%</td></tr><tr><td>inflation-protected bonds</td><td class=n>33.4%</td><td class=n>35.4%</td></tr><tr><td>investment-grade corporate bonds</td><td class=n>4.0%</td><td class=n>12.8%</td></tr><tr><td>high-yield corporate bonds</td><td class=n>0.7%</td><td class=n>0.0%</td></tr><tr><td>gold</td><td class=n>4.3%</td><td class=n>0.0%</td></tr><tr><td>commodities</td><td class=n>5.9%</td><td class=n>8.6%</td></tr><tr><td>US dollar</td><td class=n>15.4%</td><td class=n>26.9%</td></tr><tr><td>cash (T-bills)</td><td class=n>5.3%</td><td class=n>0.0%</td></tr></tbody></table></div>
+<p class="small">The model dropped its bet on inflation-protected bonds and US dollar to no view, added a bet on mid Treasury bonds. Told: risk 3.38% of 4.71% allowed, against 3.51% clipped. Duration 3.55 years. Traded 25.0% of the book, the weekly maximum.</p>
+</div></div></section>
+<section class="slide " data-section="Step 13 · Scoring"><div class="eyebrow">Step 13 · Scoring</div><h2>What happened next week, and how a week becomes a score</h2>
+<div class="cols"><div>
+<div class="tablewrap"><table><thead><tr><th>Player</th><th class=n>Return, week to 2026-08-07</th></tr></thead><tbody><tr><td>Fitted formula</td><td class=n>+1.14%</td></tr><tr><td>AI, clipped</td><td class=n>+0.18%</td></tr><tr><td>AI, told</td><td class=n>+0.65%</td></tr><tr><td>Neutral mix</td><td class=n>+0.78%</td></tr><tr><td>60/40</td><td class=n>+2.34%</td></tr></tbody></table></div>
+<p class="small">One week says nothing. We collect 113 of them.</p>
+</div><div>
+<p class="big"><dfn class="hov" data-key="Sharpe">Sharpe</dfn> = average weekly return above cash ÷ its spread × √52</p>
+<p>AI, told: average 0.0531% a week, spread 0.6225%. 0.0531 ÷ 0.6225 × 7.21 = 0.615, call it 0.62. Around 0.5 is ordinary. 1.0 is very good. Below 0 lost to cash.</p>
+<div class="def"><span class="term"><dfn class="hov" data-key="p-value">p-value</dfn>: the luck test</span><p>Take the two players' weekly returns. Reshuffle them in blocks of 8 weeks, 2,000 times. Count how often the gap flips sign. The gap is in Sharpe. Told minus clipped: +0.27 (0.615 − 0.344), p = 0.41. Below 0.05 would mean "probably not luck". This is not below 0.05.</p></div>
+</div></div></section>
+<section class="slide " data-section="The scorecard"><div class="eyebrow">The scorecard</div><h2>All 114 Fridays together</h2>
+<div class="tablewrap"><table><thead><tr><th>Player</th><th class=n>Return per year</th><th class=n>Volatility</th><th class=n>Sharpe</th><th class=n><dfn class="hov" data-key="drawdown">Worst fall</dfn></th><th class=n><dfn class="hov" data-key="turnover">Traded per week</dfn></th></tr></thead><tbody><tr><td>Fitted formula</td><td class=n>+12.4%</td><td class=n>5.4%</td><td class=n>1.42</td><td class=n>-3.5%</td><td class=n>10.2%</td></tr><tr><td>AI, clipped</td><td class=n>+5.7%</td><td class=n>4.7%</td><td class=n>0.34</td><td class=n>-3.8%</td><td class=n>16.2%</td></tr><tr><td>AI, told</td><td class=n>+7.0%</td><td class=n>4.5%</td><td class=n>0.62</td><td class=n>-3.0%</td><td class=n>16.4%</td></tr><tr><td>Neutral mix</td><td class=n>+7.1%</td><td class=n>3.7%</td><td class=n>0.76</td><td class=n>-2.9%</td><td class=n>1.2%</td></tr><tr><td>60/40</td><td class=n>+11.9%</td><td class=n>9.3%</td><td class=n>0.82</td><td class=n>-9.0%</td><td class=n>0.9%</td></tr></tbody></table></div>
+<div class="cols"><div>
+<div class="def"><span class="term">what the luck test says</span><p>Gaps are in Sharpe. Told vs clipped: +0.27, p = 0.41. Told vs neutral mix: -0.14, p = 0.67. Formula vs told: +0.81, p = 0.10.</p></div>
+<div class="def"><span class="term">the feedback loop</span><p>A rule bound on the first proposal in 77 of 114 weeks. Revision cleared every rule in 18 of them. Most common: the cap on US dollar (31 weeks), the volatility limit (31).</p></div>
+</div><div>
+<div class="def red"><span class="term">the honest reading</span><p>Neither AI player beat the neutral mix by more than luck allows. Telling the model about the rules helped in direction, not by enough to call. The fitted formula did best on these two years but scored 0.09 over ten years in the mock run. Two years cannot separate skill from a good stretch.</p></div>
+<p class="small">In version 1, with hand-typed weights and fixed 30% caps, "told beats clipped" looked real (p = 0.03). It did not survive the change to data-based rules. That is the biggest lesson of the project so far.</p>
+</div></div></section>
+<section class="slide " data-section="Assumed vs measured"><div class="eyebrow">Assumed vs measured</div><h2>Which numbers are measured, and which are still chosen</h2>
+<div class="cols"><div>
+<div class="def"><span class="term">measured from data or a public rule</span><ul>
+<li>Neutral mix: from each fund's risk.</li><li>Durations: fitted against the 10-year yield.</li><li>Capital charges: the US bank rule (12 CFR 217).</li><li>Season odds: each theme's rank in its own past.</li><li>Pull-in of the links between funds: a known method.</li><li>Formula weights: fitted again each week.</li><li>Luck-test spread: measured across the players.</li></ul></div>
+</div><div>
+<div class="def amber"><span class="term">still chosen, and written down</span><ul>
+<li>The five rule stand-ins: 15 points, 1.25, 2 years, 1.25, 25%.</li><li>The 10-year window for "normal", and the ±3 cap on z-scores.</li><li>Which series make each theme.</li><li>The 104-week window for risk and duration.</li><li>Risk aversion 3, from past studies.</li><li>Two revision rounds.</li></ul></div>
+<p class="small">Each of these is written in every run's record, with its basis. The full list is in the assumptions register.</p>
+</div></div></section>
+<section class="slide " data-section="Glossary"><div class="eyebrow">Glossary</div><h2>The statistics and market words, in one line each</h2><div class="tablewrap"><table><thead><tr><th>Word</th><th>Meaning</th></tr></thead><tbody><tr><td>z-score</td><td>How far a value sits from its own 10-year average, in units of spread. 0 is normal, 2 is rare.</td></tr><tr><td>standard deviation (spread)</td><td>The typical distance of values from their average.</td></tr><tr><td>volatility</td><td>Spread of weekly returns, times √52, so it reads per year.</td></tr><tr><td>correlation</td><td>How two funds move together, from −1 to +1.</td></tr><tr><td>shrinkage</td><td>Pulling noisy correlations toward their average by an estimated amount.</td></tr><tr><td>neutral mix</td><td>The split with no opinion: each risky fund weighted by 1 ÷ its volatility.</td></tr><tr><td>cap / active band</td><td>A fund's neutral weight plus 15 points.</td></tr><tr><td>duration</td><td>Percent price move of a bond fund for a one-point move in yields; fitted from data.</td></tr><tr><td>risk weight</td><td>The capital charge per dollar under the US bank rule: 0% government, 100% corporate, 300% stocks.</td></tr><tr><td>Sharpe</td><td>Average return above cash divided by its spread, per year. 0.5 ordinary, 1.0 very good.</td></tr><tr><td>p-value</td><td>Share of 2,000 reshuffles in which the Sharpe gap between two players flips sign. Below 0.05 means probably not luck.</td></tr><tr><td>turnover</td><td>Share of the book traded in a week.</td></tr><tr><td>worst fall (drawdown)</td><td>The biggest drop from a previous high.</td></tr><tr><td>solver</td><td>The program that picks the weights closest to what the views want while obeying every rule.</td></tr><tr><td>risk aversion</td><td>A dial for how much expected return the solver gives up to cut risk. Set to 3.</td></tr><tr><td>Fed funds rate</td><td>The interest rate the Fed sets. Its policy lever.</td></tr><tr><td>yield curve</td><td>The 10-year Treasury yield minus the 2-year. Steep means easy money ahead; flat or negative, tight.</td></tr><tr><td>credit spread</td><td>Extra yield risky companies pay over the government. High means fear.</td></tr><tr><td>VIX</td><td>A market index of expected stock swings over the next month. High means fear.</td></tr><tr><td>breakeven</td><td>The inflation rate bond prices imply over 10 years. The market's inflation expectation.</td></tr><tr><td>hawkish / dovish</td><td>Leaning to higher rates (hawkish) or lower rates (dovish). Our stance score runs from −1 dovish to +1 hawkish.</td></tr><tr><td>the book</td><td>The whole portfolio. 'Traded 25% of the book' means a quarter of it changed hands.</td></tr><tr><td>short</td><td>Holding a negative amount, that is, betting the price falls. Not allowed here; shown only for what the views wanted.</td></tr></tbody></table></div></section>
+  </div>
+  <div class="nav"><button type="button" id="prev">◀ Back</button><select id="jump" aria-label="Jump to slide"><option value="0">0. Start</option><option value="1">1. The job</option><option value="2">2. The players</option><option value="3">3. The funds</option><option value="4">4. Step 1 · Data</option><option value="5">5. Step 2 · Z-scores</option><option value="6">6. Step 3 · Themes</option><option value="7">7. Step 4 · Regime</option><option value="8">8. Step 5 · Fed words</option><option value="9">9. Step 6 · Risk</option><option value="10">10. Step 7 · Neutral mix</option><option value="11">11. Step 8 · Rules</option><option value="12">12. Step 9 · Duration</option><option value="13">13. Step 10 · The AI's views</option><option value="14">14. Step 11 · Blend</option><option value="15">15. Step 12a · Clipped</option><option value="16">16. Step 12b · Told</option><option value="17">17. Step 13 · Scoring</option><option value="18">18. The scorecard</option><option value="19">19. Assumed vs measured</option><option value="20">20. Glossary</option></select><span id="label"></span><button type="button" id="next">Next ▶</button><button type="button" id="toggle">Scroll view</button></div>
+</div>
+<script>
+(function () {
+  var deck = document.getElementById('deck'); var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var prev = document.getElementById('prev'), next = document.getElementById('next'), toggle = document.getElementById('toggle'), label = document.getElementById('label'), jump = document.getElementById('jump');
+  var i = 0, scroll = false, touchX = null;
+  function show(n) { i = Math.max(0, Math.min(slides.length - 1, n)); slides.forEach(function (s, k) { s.classList.toggle('active', k === i); }); label.textContent = (i + 1) + ' / ' + slides.length + ' · ' + (slides[i].getAttribute('data-section') || ''); jump.value = String(i); try { localStorage.setItem('fin-numbers-deck', String(i)); } catch (e) {} }
+  prev.addEventListener('click', function () { show(i - 1); }); next.addEventListener('click', function () { show(i + 1); });
+  jump.addEventListener('change', function () { show(parseInt(jump.value, 10)); });
+  toggle.addEventListener('click', function () { scroll = !scroll; deck.classList.toggle('scroll', scroll); toggle.textContent = scroll ? 'Slide view' : 'Scroll view'; if (scroll) slides[i].scrollIntoView(); else show(i); });
+  document.addEventListener('keydown', function (e) { if (scroll) return; if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); show(i + 1); } if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); show(i - 1); } if (e.key === 'Home') show(0); if (e.key === 'End') show(slides.length - 1); });
+  document.addEventListener('touchstart', function (e) { touchX = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend', function (e) { if (scroll || touchX === null) return; var dx = e.changedTouches[0].clientX - touchX; if (Math.abs(dx) > 60) show(dx < 0 ? i + 1 : i - 1); touchX = null; }, { passive: true });
+  var start = 0; try { start = parseInt(localStorage.getItem('fin-numbers-deck') || '0', 10) || 0; } catch (e) {} show(start);
+  var G = {"volatility": "How much a fund's price jumps around: the spread of its weekly returns, stated per year.", "standard deviation": "The typical distance of values from their average. The 'spread'.", "correlation": "How two funds move together, from −1 (opposite) to +1 (in step).", "shrinkage": "Pulling each measured correlation part of the way toward the average correlation, by an estimated amount, because 104 weeks is a small sample.", "Duration": "How hard a bond fund's price moves when yields move one point. Fitted here from the fund's own returns.", "risk weight": "The capital a bank must hold per dollar of a fund, from the US rule 12 CFR 217: 0% government bonds and gold, 100% corporate bonds, 300% listed stocks.", "Sharpe": "Average weekly return above cash, divided by its spread, times √52. Reward per unit of risk.", "p-value": "How often a Sharpe gap this size shows up when the weeks are reshuffled 2,000 times in blocks of 8. Below 0.05 means probably not luck.", "solver": "The program that picks the weights closest to what the views want while obeying every rule.", "risk aversion": "A dial for how much expected return the solver gives up to cut risk. Set to 3, from published studies.", "Fed funds rate": "The interest rate the Fed sets. Its policy lever.", "yield curve": "The 10-year Treasury yield minus the 2-year yield, in points. Steep means easy money ahead.", "credit spread": "Extra yield risky companies pay over the government, in points. High means fear.", "VIX": "A market index of expected stock swings over the next month. High means fear.", "breakeven": "The inflation rate bond prices imply over 10 years. The market's inflation expectation.", "drawdown": "The biggest fall from a previous high.", "turnover": "The share of the book bought or sold in one week."};
+  var tip = document.createElement('div'); tip.id = 'termtip'; tip.setAttribute('role', 'tooltip'); document.body.appendChild(tip); var current = null;
+  function place(el) { var r = el.getBoundingClientRect(); tip.style.display = 'block'; var w = tip.offsetWidth, h = tip.offsetHeight; var left = r.left, top = r.bottom + 8; if (left + w > window.innerWidth - 12) left = Math.max(12, window.innerWidth - w - 12); if (top + h > window.innerHeight - 12) top = r.top - h - 8; tip.style.left = left + 'px'; tip.style.top = Math.max(8, top) + 'px'; }
+  function showT(el) { var key = el.getAttribute('data-key'); if (!key || !G[key]) return; tip.replaceChildren(); var b = document.createElement('b'); b.textContent = key; tip.appendChild(b); tip.appendChild(document.createTextNode(G[key])); if (current) current.classList.remove('on'); current = el; el.classList.add('on'); place(el); }
+  function hideT() { tip.style.display = 'none'; if (current) current.classList.remove('on'); current = null; }
+  document.querySelectorAll('dfn.hov').forEach(function (d) { d.setAttribute('tabindex', '0'); });
+  document.addEventListener('mouseover', function (e) { var t = e.target.closest && e.target.closest('dfn.hov'); if (t) showT(t); });
+  document.addEventListener('mouseout', function (e) { var t = e.target.closest && e.target.closest('dfn.hov'); if (t && !(e.relatedTarget && t.contains(e.relatedTarget))) hideT(); });
+  document.addEventListener('focusin', function (e) { var t = e.target.closest && e.target.closest('dfn.hov'); if (t) showT(t); });
+  document.addEventListener('focusout', function (e) { var t = e.target.closest && e.target.closest('dfn.hov'); if (t) hideT(); });
+  document.addEventListener('click', function (e) { var t = e.target.closest && e.target.closest('dfn.hov'); if (t) { if (current === t && tip.style.display === 'block') hideT(); else showT(t); } else hideT(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hideT(); });
+  window.addEventListener('scroll', hideT, true); window.addEventListener('resize', hideT);
+})();
+</script>

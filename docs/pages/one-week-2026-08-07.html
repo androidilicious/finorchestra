@@ -1,0 +1,503 @@
+<title>One Week Through Finorchestra</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #f6f4ee; --surface: #fbfaf6; --ink: #17211f; --ink2: #4b524f; --muted: #6f6e68; --rule: #d9d6cc; --rule2: #e9e6dc;
+    --accent: #0f6b66; --accent-soft: #e1efed;
+    --clip: #d95d2b; --clip-soft: #f8e7dd; --fb: #178f66; --fb-soft: #dff1e8; --mkt: #7d7a70; --mkt-soft: #ecebe4; --warn: #b8860b;
+    --bar-neutral: #9a9890;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #121615; --surface: #1a201e; --ink: #ece9e0; --ink2: #b9b6ac; --muted: #8d8b82; --rule: #2d3431; --rule2: #232927;
+      --accent: #4fb3ac; --accent-soft: #14302e;
+      --clip: #ef7f4f; --clip-soft: #3a2419; --fb: #3fbf8f; --fb-soft: #16302a; --mkt: #a09e94; --mkt-soft: #262a27; --warn: #e0b040;
+      --bar-neutral: #6a685f;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #121615; --surface: #1a201e; --ink: #ece9e0; --ink2: #b9b6ac; --muted: #8d8b82; --rule: #2d3431; --rule2: #232927;
+    --accent: #4fb3ac; --accent-soft: #14302e;
+    --clip: #ef7f4f; --clip-soft: #3a2419; --fb: #3fbf8f; --fb-soft: #16302a; --mkt: #a09e94; --mkt-soft: #262a27; --warn: #e0b040;
+    --bar-neutral: #6a685f;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.55 "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 40px 22px 90px; }
+  h1, h2, h3 { font-family: "Source Serif 4", Georgia, serif; font-weight: 600; letter-spacing: -.01em; text-wrap: balance; }
+  h1 { font-size: 38px; line-height: 1.12; margin: 0 0 12px; }
+  .dek { font-size: 18px; color: var(--ink2); max-width: 66ch; margin: 0 0 8px; }
+  .meta { color: var(--muted); font-size: 13.5px; max-width: 80ch; }
+  .eyebrow { font-size: 12.5px; text-transform: uppercase; letter-spacing: .09em; color: var(--muted); margin-bottom: 10px; }
+  code, .mono { font-family: "IBM Plex Mono", ui-monospace, Consolas, monospace; }
+  code { font-size: 13px; background: var(--rule2); padding: 1px 5px; border-radius: 4px; }
+
+  /* route map */
+  .map { margin: 30px 0 10px; padding: 18px 18px 14px; background: var(--surface); border: 1px solid var(--rule); border-radius: 12px; }
+  .map h2 { font-size: 15px; margin: 0 0 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-family: "IBM Plex Sans", sans-serif; font-weight: 600; }
+  .map svg { display: block; width: 100%; height: auto; }
+  .map .legend { display: flex; gap: 18px; flex-wrap: wrap; font-size: 13px; color: var(--ink2); margin-top: 8px; }
+  .legend .k { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -2px; margin-right: 6px; }
+
+  /* stations */
+  .station { display: grid; grid-template-columns: 64px 1fr; gap: 0 18px; margin-top: 26px; }
+  .station .n { display: flex; flex-direction: column; align-items: center; }
+  .station .n b { width: 44px; height: 44px; border-radius: 50%; background: var(--accent); color: #fff; display: grid; place-items: center; font: 600 18px "IBM Plex Mono", monospace; }
+  .station .n i { flex: 1; width: 2px; background: var(--rule); margin-top: 8px; min-height: 24px; }
+  .station.last .n i { display: none; }
+  .card { background: var(--surface); border: 1px solid var(--rule); border-radius: 12px; padding: 18px 22px 16px; }
+  .card h2 { font-size: 22px; margin: 2px 0 4px; }
+  .card .what { color: var(--ink2); margin: 0 0 14px; max-width: 74ch; font-size: 15px; }
+  .card .what b { color: var(--ink); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
+  @media (max-width: 800px) { .grid2, .grid3, .lanes { grid-template-columns: 1fr !important; } .station { grid-template-columns: 44px 1fr; } }
+  .panel { background: var(--paper); border: 1px solid var(--rule2); border-radius: 8px; padding: 12px 14px; }
+  .panel h4 { margin: 0 0 8px; font-size: 12px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); font-weight: 600; }
+  .panel.io { border-left: 3px solid var(--accent); }
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+  th, td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--rule2); vertical-align: top; }
+  th { font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 600; }
+  td.num, th.num { text-align: right; font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  tr:last-child td { border-bottom: 0; }
+  pre { margin: 0; font: 12px/1.5 "IBM Plex Mono", ui-monospace, Consolas, monospace; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--ink); }
+  .quiet { color: var(--muted); font-size: 13px; }
+  .arrow { text-align: center; color: var(--muted); font-size: 22px; line-height: 1; margin: 6px 0 -6px; }
+
+  /* bars */
+  .bars .row { display: grid; grid-template-columns: 84px 1fr 56px; align-items: center; gap: 8px; font-size: 13px; margin: 3px 0; }
+  .bars .row .t { color: var(--ink2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bars .row .tr { position: relative; height: 12px; background: var(--rule2); border-radius: 3px; overflow: visible; }
+  .bars .row .f { position: absolute; top: 0; left: 0; height: 100%; border-radius: 3px; }
+  .bars .row .f.neg { left: auto; right: 100%; }
+  .bars .row .v { text-align: right; font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; }
+  .bars .cap { position: absolute; top: 0; width: 2px; height: 12px; background: var(--ink); opacity: .7; }
+  .bars.mkt .f { background: var(--mkt); } .bars.clip .f { background: var(--clip); } .bars.fb .f { background: var(--fb); } .bars.neu .f { background: var(--bar-neutral); }
+  .bars.signed .row { grid-template-columns: 84px 1fr 56px; }
+  .bars.signed .tr { margin-left: 50%; width: 50%; background: transparent; }
+  .bars.signed .tr::before { content: ""; position: absolute; left: 0; top: -2px; width: 1px; height: 16px; background: var(--ink); opacity: .5; }
+  .bars.signed .f { background: var(--accent); }
+  .bars.signed .f.neg { background: var(--clip); }
+  .bars.wish .f { background: var(--bar-neutral); }
+  .bars.wish .f.off { background: var(--warn); }
+  .bars:not(.signed) .row .tr { overflow: hidden; }
+
+  details.math { margin-top: 14px; border-top: 1px dashed var(--rule); padding-top: 10px; }
+  details.math summary { cursor: pointer; font-size: 14px; font-weight: 600; color: var(--accent); list-style: none; }
+  details.math summary::-webkit-details-marker { display: none; }
+  details.math summary::before { content: "▸ "; }
+  details.math[open] summary::before { content: "▾ "; }
+  details.math pre { font-size: 12.5px; }
+  /* lanes */
+  .lanes { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 8px; }
+  .lane { border-radius: 12px; padding: 16px 18px; border: 1px solid var(--rule); background: var(--surface); }
+  .lane.clip { border-top: 4px solid var(--clip); } .lane.fb { border-top: 4px solid var(--fb); }
+  .lane h3 { margin: 0 0 4px; font-size: 19px; }
+  .lane .tag { display: inline-block; font-size: 11.5px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; margin-bottom: 8px; }
+  .lane.clip .tag { background: var(--clip-soft); color: var(--clip); } .lane.fb .tag { background: var(--fb-soft); color: var(--fb); }
+  .step { display: grid; grid-template-columns: 26px 1fr; gap: 10px; margin: 12px 0; }
+  .step .s { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font: 600 12px "IBM Plex Mono", monospace; color: #fff; margin-top: 2px; }
+  .lane.clip .step .s { background: var(--clip); } .lane.fb .step .s { background: var(--fb); }
+  .step p { margin: 0 0 6px; font-size: 14.5px; }
+  .msg { background: var(--paper); border: 1px solid var(--rule2); border-left: 3px solid var(--warn); border-radius: 6px; padding: 8px 10px; font: 12.5px/1.45 "IBM Plex Mono", monospace; margin: 6px 0; overflow-wrap: anywhere; }
+  .msg.silent { border-left-color: var(--mkt); color: var(--ink2); }
+  .pill { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 999px; background: var(--rule2); color: var(--ink2); margin-right: 4px; }
+  .pill.ok { background: var(--fb-soft); color: var(--fb); } .pill.bad { background: var(--clip-soft); color: var(--clip); }
+  .dial { display: grid; grid-template-columns: 150px 1fr 110px; gap: 8px; align-items: center; font-size: 13px; margin: 5px 0; }
+  .dial .tr { position: relative; height: 10px; background: var(--rule2); border-radius: 3px; }
+  .dial .f { position: absolute; top: 0; height: 100%; border-radius: 3px; }
+  .dial .band { position: absolute; top: -2px; height: 14px; background: var(--accent-soft); border: 1px dashed var(--accent); border-radius: 3px; }
+  .dial .v { font-family: "IBM Plex Mono", monospace; text-align: right; font-variant-numeric: tabular-nums; }
+  .big { font-family: "IBM Plex Mono", monospace; font-size: 30px; font-weight: 500; line-height: 1.1; }
+  .big small { font: 13px "IBM Plex Sans", sans-serif; color: var(--ink2); display: block; margin-top: 4px; }
+  .callout { background: var(--accent-soft); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 18px 0 0; max-width: 80ch; }
+  .callout p { margin: 0; }
+  dfn.hov { font-style: normal; cursor: help; text-decoration: underline dotted; text-decoration-color: var(--accent); text-underline-offset: 3px; }
+  dfn.hov:hover, dfn.hov:focus-visible, dfn.hov.on { background: var(--accent-soft); outline: none; border-radius: 2px; }
+  #termtip { position: fixed; z-index: 50; max-width: 340px; background: var(--surface); color: var(--ink); border: 1px solid var(--rule); border-left: 3px solid var(--accent); border-radius: 6px; box-shadow: 0 6px 18px rgba(0,0,0,.14); padding: 10px 14px; font-size: 13.5px; line-height: 1.45; display: none; pointer-events: none; }
+  #termtip b { display: block; font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--accent); margin-bottom: 3px; font-weight: 500; }
+</style>
+
+<div class="wrap">
+  <div class="eyebrow">One decision week, start to finish · Friday 7 August 2026 · run openai-postcutoff-aefba080</div>
+  <h1>One week through Finorchestra</h1>
+<p style="border-left:3px solid #b7791f;background:rgba(183,121,31,.12);padding:10px 14px;border-radius:0 6px 6px 0;font-size:14.5px;max-width:78ch"><b>Version-1 example, kept for the record.</b> This page reconstructs the week from run <code>openai-postcutoff-aefba080</code>, made under the first version of the system: hand-set market weights, fixed 30% single-asset caps, a fixed duration band, a hand-written formula agent and a stance-times-novelty surprise term. Revision 2 (7 September 2026) replaced all of these with data-derived choices. The current run is <code>openai-postcutoff-v3-3baad69b</code>; the current worked week is the numbers deck for 31 July 2026. The mechanism shown here is unchanged.</p>
+  <p class="dek">Where the week starts, what happens at each station, where the two AI paths split, and where they finish. Every number is the one the system recorded that Friday.</p>
+  <p class="meta">Money moves at station 7 and nowhere else. Stations 0 to 4 are shared by both AI strategies. Station 5 is where the paths differ. The formula agent and the three yardsticks take their own routes and appear only at the finish for comparison.</p>
+
+  <section class="map" aria-label="Route map">
+    <h2>The route</h2>
+    <svg viewBox="0 0 960 250" role="img" aria-label="Route map of the eight stations with a split into two lanes at station 5">
+      <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--muted)"/></marker></defs>
+      <g font-family="IBM Plex Sans, system-ui, sans-serif" font-size="12.5" fill="var(--ink)">
+        <!-- shared stations -->
+        <g>
+          <rect x="10" y="88" width="130" height="66" rx="10" fill="var(--surface)" stroke="var(--rule)"/>
+          <text x="75" y="112" text-anchor="middle" font-weight="600">0 · Data desk</text>
+          <text x="75" y="130" text-anchor="middle" fill="var(--ink2)" font-size="11.5">what was knowable</text>
+          <text x="75" y="145" text-anchor="middle" fill="var(--ink2)" font-size="11.5">on 7 Aug 2026</text>
+        </g>
+        <line x1="140" y1="121" x2="162" y2="121" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#ah)"/>
+        <g>
+          <rect x="164" y="88" width="120" height="66" rx="10" fill="var(--surface)" stroke="var(--rule)"/>
+          <text x="224" y="112" text-anchor="middle" font-weight="600">1 · Signals</text>
+          <text x="224" y="130" text-anchor="middle" fill="var(--ink2)" font-size="11.5">z-scores, themes,</text>
+          <text x="224" y="145" text-anchor="middle" fill="var(--ink2)" font-size="11.5">regime, Fed tone</text>
+        </g>
+        <line x1="284" y1="121" x2="306" y2="121" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#ah)"/>
+        <g>
+          <rect x="308" y="88" width="120" height="66" rx="10" fill="var(--surface)" stroke="var(--rule)"/>
+          <text x="368" y="112" text-anchor="middle" font-weight="600">2 · Prompt</text>
+          <text x="368" y="130" text-anchor="middle" fill="var(--ink2)" font-size="11.5">masked assets,</text>
+          <text x="368" y="145" text-anchor="middle" fill="var(--ink2)" font-size="11.5">signals, 2 statements</text>
+        </g>
+        <line x1="428" y1="121" x2="450" y2="121" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#ah)"/>
+        <g>
+          <rect x="452" y="88" width="120" height="66" rx="10" fill="var(--surface)" stroke="var(--rule)"/>
+          <text x="512" y="112" text-anchor="middle" font-weight="600">3 · AI views</text>
+          <text x="512" y="130" text-anchor="middle" fill="var(--ink2)" font-size="11.5">6 views as JSON</text>
+          <text x="512" y="145" text-anchor="middle" fill="var(--ink2)" font-size="11.5">gpt-4.1-mini</text>
+        </g>
+        <line x1="572" y1="121" x2="594" y2="121" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#ah)"/>
+        <g>
+          <rect x="596" y="88" width="120" height="66" rx="10" fill="var(--surface)" stroke="var(--rule)"/>
+          <text x="656" y="112" text-anchor="middle" font-weight="600">4 · Blend</text>
+          <text x="656" y="130" text-anchor="middle" fill="var(--ink2)" font-size="11.5">Black-Litterman:</text>
+          <text x="656" y="145" text-anchor="middle" fill="var(--ink2)" font-size="11.5">views → returns</text>
+        </g>
+        <!-- split -->
+        <path d="M716 121 C 740 121, 740 46, 764 46" fill="none" stroke="var(--clip)" stroke-width="2" marker-end="url(#ah)"/>
+        <path d="M716 121 C 740 121, 740 196, 764 196" fill="none" stroke="var(--fb)" stroke-width="2" marker-end="url(#ah)"/>
+        <g>
+          <rect x="766" y="14" width="96" height="64" rx="10" fill="var(--surface)" stroke="var(--clip)" stroke-width="1.5"/>
+          <text x="814" y="37" text-anchor="middle" font-weight="600" fill="var(--clip)">5a · Clip</text>
+          <text x="814" y="53" text-anchor="middle" fill="var(--ink2)" font-size="11.5">rules applied,</text>
+          <text x="814" y="67" text-anchor="middle" fill="var(--ink2)" font-size="11.5">AI not told</text>
+        </g>
+        <g>
+          <rect x="766" y="164" width="96" height="64" rx="10" fill="var(--surface)" stroke="var(--fb)" stroke-width="1.5"/>
+          <text x="814" y="187" text-anchor="middle" font-weight="600" fill="var(--fb)">5b · Tell</text>
+          <text x="814" y="203" text-anchor="middle" fill="var(--ink2)" font-size="11.5">checker writes,</text>
+          <text x="814" y="217" text-anchor="middle" fill="var(--ink2)" font-size="11.5">AI revises ×2</text>
+        </g>
+        <!-- rejoin -->
+        <path d="M862 46 C 886 46, 886 121, 908 121" fill="none" stroke="var(--clip)" stroke-width="2"/>
+        <path d="M862 196 C 886 196, 886 121, 908 121" fill="none" stroke="var(--fb)" stroke-width="2" marker-end="url(#ah)"/>
+        <g>
+          <rect x="880" y="88" width="72" height="66" rx="10" fill="var(--accent)" stroke="none"/>
+          <text x="916" y="112" text-anchor="middle" font-weight="600" fill="#fff">6 · Hold</text>
+          <text x="916" y="130" text-anchor="middle" fill="#fff" font-size="11.5">one week,</text>
+          <text x="916" y="145" text-anchor="middle" fill="#fff" font-size="11.5">score, repeat</text>
+        </g>
+      </g>
+    </svg>
+    <div class="legend"><span><span class="k" style="background:var(--clip)"></span>AI, silently clipped</span><span><span class="k" style="background:var(--fb)"></span>AI, told which rules it broke</span><span><span class="k" style="background:var(--accent)"></span>shared / final</span></div>
+  </section>
+
+  <!-- STATION 0 -->
+  <div class="station">
+    <div class="n"><b>0</b><i></i></div>
+    <div class="card">
+      <h2>Start: the data desk on Friday 7 August 2026</h2>
+      <p class="what"><b>What happens.</b> The system freezes what a person could have known by that Friday: economic series as they were first published (later revisions are ignored), fund prices through that day, every Fed statement released so far, and two newspaper-based indices. Nothing from after that date is allowed in.</p>
+      <div class="grid3">
+        <div class="panel io"><h4>Economy, latest known readings</h4>
+          <table><tbody>
+            <tr><td>Inflation, CPI year on year</td><td class="num">3.73%</td></tr>
+            <tr><td>Inflation, last 3 months annualised</td><td class="num">2.78%</td></tr>
+            <tr><td>Market inflation expectation</td><td class="num">2.26%</td></tr>
+            <tr><td>Fed funds rate</td><td class="num">3.63%</td></tr>
+            <tr><td>Yield curve (10y − 2y)</td><td class="num">0.44</td></tr>
+            <tr><td>Credit spread</td><td class="num">1.61</td></tr>
+            <tr><td>VIX</td><td class="num">15.2</td></tr>
+            <tr><td>Unemployment change, 3 months</td><td class="num">−0.20</td></tr>
+          </tbody></table></div>
+        <div class="panel io"><h4>Text</h4>
+          <p style="margin:0 0 8px;font-size:14px">166 Fed statements on file, latest <b>29 July 2026</b> (9 days old): rate held at "about 3.5 to 4 percent"; "inflation remains elevated"; "elevated uncertainty ... conflict in the Middle East".</p>
+          <p style="margin:0;font-size:14px">News indices, as z-scores: policy uncertainty <b>+1.16</b>, geopolitical risk <b>+1.37</b>.</p></div>
+        <div class="panel io"><h4>Markets</h4>
+          <p style="margin:0 0 8px;font-size:14px">Ten funds, daily prices through 7 August. Last week's moves: stocks +3.5%, gold +7.3%, long Treasuries +1.0%, commodities −1.8%.</p>
+          <p style="margin:0;font-size:14px">Previous holdings of each strategy, needed for the turnover rule.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATION 1 -->
+  <div class="station">
+    <div class="n"><b>1</b><i></i></div>
+    <div class="card">
+      <h2>Signals: turn raw numbers into "how unusual is this?"</h2>
+      <p class="what"><b>What happens.</b> Each series becomes a <dfn class="hov" data-key="z-score">z-score</dfn> against its own past ten years. Z-scores are averaged into four themes. Growth and inflation themes set the odds of four economic "seasons". The Fed statement is scored for tone and for how much its wording changed.</p>
+      <div class="grid3">
+        <div class="panel"><h4>Four themes (z)</h4>
+          <div class="bars signed">
+            <div class="row"><span class="t">growth</span><div class="tr"><div class="f" style="width:7%"></div></div><span class="v">+0.07</span></div>
+            <div class="row"><span class="t">inflation</span><div class="tr"><div class="f" style="width:15%"></div></div><span class="v">+0.15</span></div>
+            <div class="row"><span class="t">policy</span><div class="tr"><div class="f" style="width:25%"></div></div><span class="v">+0.25</span></div>
+            <div class="row"><span class="t">financial</span><div class="tr"><div class="f neg" style="width:76%"></div></div><span class="v">−0.76</span></div>
+          </div>
+          <p class="quiet" style="margin:8px 0 0">Positive means above normal. Financial stress is well below normal.</p></div>
+        <div class="panel"><h4>Regime odds</h4>
+          <div class="bars neu">
+            <div class="row"><span class="t">overheating</span><div class="tr"><div class="f" style="width:58%"></div></div><span class="v">29%</span></div>
+            <div class="row"><span class="t">stagflation</span><div class="tr"><div class="f" style="width:52%"></div></div><span class="v">26%</span></div>
+            <div class="row"><span class="t">goldilocks</span><div class="tr"><div class="f" style="width:47%"></div></div><span class="v">24%</span></div>
+            <div class="row"><span class="t">recession</span><div class="tr"><div class="f" style="width:43%"></div></div><span class="v">21%</span></div>
+          </div>
+          <p class="quiet" style="margin:8px 0 0">Almost a toss-up. Nothing dominant this week.</p></div>
+        <div class="panel"><h4>Fed tone</h4>
+          <table><tbody>
+            <tr><td>stance (−1 easing … +1 tightening)</td><td class="num">+0.30</td></tr>
+            <tr><td>change vs previous statement</td><td class="num">+0.30</td></tr>
+            <tr><td>novelty of wording</td><td class="num">0.06</td></tr>
+            <tr><td>weeks since statement</td><td class="num">1.3</td></tr>
+          </tbody></table>
+          <p class="quiet" style="margin:8px 0 0">Mildly hawkish; the text barely changed.</p></div>
+      </div>
+      <details class="math" open>
+        <summary>The arithmetic behind these numbers (recomputed from the raw data, matches the log)</summary>
+        <div class="panel io" style="margin-top:10px"><h4>1. Z-score = (latest value − mean of the past 10 years) ÷ standard deviation of the past 10 years</h4>
+          <p class="quiet" style="margin:0 0 8px">The window ends the observation <i>before</i> the latest one, so the latest reading never grades itself. Monthly series have about 120 points in the window, daily ones about 2,500. Results are clipped to ±3.</p>
+          <table>
+            <thead><tr><th>Series (transform)</th><th class="num">Latest</th><th class="num">Dated</th><th class="num">10-yr mean</th><th class="num">10-yr sd</th><th class="num">z</th></tr></thead>
+            <tbody>
+              <tr><td>Industrial production, % change over 12 months</td><td class="num">1.14%</td><td class="num">Jun 2026</td><td class="num">0.28%</td><td class="num">4.01%</td><td class="num">+0.216</td></tr>
+              <tr><td>Payrolls, % change over 3 months</td><td class="num">0.04%</td><td class="num">Jul 2026</td><td class="num">0.27%</td><td class="num">2.17%</td><td class="num">−0.107</td></tr>
+              <tr><td>Unemployment rate, change over 3 months</td><td class="num">−0.20</td><td class="num">Jul 2026</td><td class="num">−0.02</td><td class="num">1.70</td><td class="num">−0.108</td></tr>
+              <tr><td>CPI, % change over 12 months</td><td class="num">3.73%</td><td class="num">Jun 2026</td><td class="num">3.25%</td><td class="num">2.06%</td><td class="num">+0.234</td></tr>
+              <tr><td>CPI, 3-month change annualised</td><td class="num">2.78%</td><td class="num">Jun 2026</td><td class="num">3.42%</td><td class="num">2.69%</td><td class="num">−0.236</td></tr>
+              <tr><td>10-year breakeven inflation, level</td><td class="num">2.26</td><td class="num">6 Aug</td><td class="num">2.10</td><td class="num">0.35</td><td class="num">+0.449</td></tr>
+              <tr><td>Fed funds rate, level</td><td class="num">3.63</td><td class="num">6 Aug</td><td class="num">2.39</td><td class="num">1.88</td><td class="num">+0.662</td></tr>
+              <tr><td>Yield curve 10y − 2y, level</td><td class="num">0.44</td><td class="num">6 Aug</td><td class="num">0.35</td><td class="num">0.56</td><td class="num">+0.153</td></tr>
+              <tr><td>Baa credit spread, level</td><td class="num">1.61</td><td class="num">6 Aug</td><td class="num">2.02</td><td class="num">0.39</td><td class="num">−1.041</td></tr>
+              <tr><td>VIX, level</td><td class="num">15.15</td><td class="num">6 Aug</td><td class="num">18.60</td><td class="num">7.27</td><td class="num">−0.474</td></tr>
+            </tbody>
+          </table>
+          <p class="quiet" style="margin:8px 0 0">Worked line: CPI year on year is 3.73%. Over the previous ten years it averaged 3.25% with a standard deviation of 2.06 points. (3.73 − 3.25) ÷ 2.06 = +0.234. Daily market series are dated 6 August because they are published with a one-day lag.</p>
+        </div>
+        <div class="grid2" style="margin-top:12px">
+          <div class="panel io"><h4>2. Theme = average of the z-scores, with a sign that says which way is "up"</h4>
+            <pre>growth    = mean(+0.216, −0.107, −(−0.108)) = +0.072
+inflation = mean(+0.234, −0.236, +0.449)   = +0.149
+policy    = mean(+0.662, −(+0.153))         = +0.254
+financial = mean(−1.041, −0.474)           = −0.757</pre>
+            <p class="quiet" style="margin:8px 0 0">Unemployment rising is bad for growth, so its sign is flipped. A steeper curve means looser conditions, so it is subtracted from the funds rate in the policy theme.</p></div>
+          <div class="panel io"><h4>3. Regime odds from two logistic curves, temperature 0.75</h4>
+            <pre>P(growth up)    = 1 / (1 + e^(−0.072 / 0.75)) = 0.524
+P(inflation up) = 1 / (1 + e^(−0.149 / 0.75)) = 0.550
+
+overheating = 0.524 × 0.550         = 0.288
+goldilocks  = 0.524 × (1 − 0.550)   = 0.236
+stagflation = (1 − 0.524) × 0.550   = 0.262
+recession   = (1 − 0.524) × (1 − 0.550) = 0.214</pre>
+            <p class="quiet" style="margin:8px 0 0">Both themes sit near zero this week, so both curves sit near one half and the four odds come out nearly even. A theme of +0.75 would give 73%, +1.5 would give 88%.</p></div>
+        </div>
+        <div class="panel io" style="margin-top:12px"><h4>4. Fed text: one number from the model, the rest arithmetic</h4>
+          <pre>stance        = 0.30   the model reads the masked 29 July statement and scores it from −1 (easing) to +1 (tightening); cached once per statement
+stance_change = 0.30 − previous statement's stance = 0.30
+novelty       = 1 − cosine similarity of word 1-gram and 2-gram TF-IDF vectors, 29 July vs 17 June = 0.059
+surprise      = stance × (0.5 + novelty) = 0.30 × 0.559 = 0.168</pre>
+          <p class="quiet" style="margin:8px 0 0">The two statements share 94% of their wording, so novelty is tiny and the surprise term stays small. The surprise feeds only the formula agent and the panel; the language model sees stance, stance change and novelty directly.</p></div>
+      </details>
+    </div>
+  </div>
+
+  <!-- STATION 2 -->
+  <div class="station">
+    <div class="n"><b>2</b><i></i></div>
+    <div class="card">
+      <h2>Prompt: package it for the model, with names removed</h2>
+      <p class="what"><b>What happens.</b> The signals above, an asset list with letters instead of tickers, and the two most relevant statements are written into one message. Dates, percentages and tickers are masked so the model cannot recognise the episode and recall what happened next. Total length about 4,200 characters.</p>
+      <div class="grid2">
+        <div class="panel io"><h4>Excerpt, exactly as sent</h4>
+<pre>&lt;&lt;ASSETS&gt;&gt;
+- Asset A: broad domestic equities
+- Asset B: long-term government bonds (20y+)
+- Asset D: inflation-protected government bonds
+- Asset G: gold
+- Asset I: US dollar vs major currencies
+...
+&lt;&lt;SIGNALS&gt;&gt;
+{ "themes": {"growth": 0.072, "inflation": 0.149,
+             "policy": 0.254, "financial": -0.757},
+  "regime_probabilities": {"overheating": 0.288, ...},
+  "fed_stance": 0.3, "fed_statement_novelty": 0.059 }
+&lt;&lt;DOCUMENTS&gt;&gt;
+Document 1 (released t-1 weeks):
+The Committee decided to maintain the target range for
+the federal funds rate at about 3.5 to 4 percent ...</pre></div>
+        <div class="panel"><h4>The instruction</h4>
+          <p style="margin:0 0 8px;font-size:14px">"Use ONLY the information provided. Do not rely on memory of specific historical episodes."</p>
+          <p style="margin:0 0 8px;font-size:14px">"Express each view as an expected excess return over cash per year with a confidence in [0,1]. Cite evidence for every view."</p>
+          <p style="margin:0;font-size:14px">"Reply with ONLY a JSON object ... Provide between 2 and 6 views."</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATION 3 -->
+  <div class="station">
+    <div class="n"><b>3</b><i></i></div>
+    <div class="card">
+      <h2>AI views: the model's opinion, as six lines of JSON</h2>
+      <p class="what"><b>What happens.</b> gpt-4.1-mini reads the prompt and returns views. Each is a direction, an expected edge over cash per year, a confidence, and the evidence it leaned on. The system checks the JSON against a schema and swaps the letters back to tickers. This is the <b>shared first proposal</b>: both AI paths start from exactly this.</p>
+      <table>
+        <thead><tr><th>Fund</th><th>Direction</th><th class="num">Edge / yr</th><th class="num">Confidence</th><th>Evidence it cited</th></tr></thead>
+        <tbody>
+          <tr><td>Inflation-protected bonds</td><td><span class="pill ok">overweight</span></td><td class="num">+4.0%</td><td class="num">0.80</td><td class="quiet">breakeven z +0.449; "inflation remains elevated"; stagflation odds 0.26</td></tr>
+          <tr><td>Gold</td><td><span class="pill ok">overweight</span></td><td class="num">+3.0%</td><td class="num">0.70</td><td class="quiet">geopolitical risk z 1.37; policy uncertainty z 1.16</td></tr>
+          <tr><td>US dollar</td><td><span class="pill ok">overweight</span></td><td class="num">+2.0%</td><td class="num">0.60</td><td class="quiet">hawkish stance 0.3; funds-rate z 0.66</td></tr>
+          <tr><td>Long Treasuries</td><td><span class="pill bad">underweight</span></td><td class="num">−2.0%</td><td class="num">0.70</td><td class="quiet">tight policy; CPI z 0.23</td></tr>
+          <tr><td>US stocks</td><td><span class="pill">neutral</span></td><td class="num">0</td><td class="num">0.50</td><td class="quiet">mixed growth and risk signals</td></tr>
+          <tr><td>High yield</td><td><span class="pill">neutral</span></td><td class="num">0</td><td class="num">0.40</td><td class="quiet">spreads tight, risk appetite uncertain</td></tr>
+        </tbody>
+      </table>
+      <p class="quiet" style="margin:10px 0 0">Its one-line regime call: "a mixed environment with moderate growth, elevated inflation, hawkish policy stance, low financial stress, and high geopolitical risk."</p>
+    </div>
+  </div>
+
+  <!-- STATION 4 -->
+  <div class="station">
+    <div class="n"><b>4</b><i></i></div>
+    <div class="card">
+      <h2>Blend: <dfn class="hov" data-key="Black-Litterman">Black-Litterman</dfn> turns opinions into expected returns</h2>
+      <p class="what"><b>What happens.</b> Start from the returns that would justify simply holding market weights (the <dfn class="hov" data-key="prior">prior</dfn>). Pull each asset toward the model's target in proportion to its confidence, letting correlated assets move together. Then ask what portfolio those blended returns would want if there were no rules at all.</p>
+      <div class="grid2">
+        <div class="panel io"><h4>Expected excess return, % per year</h4>
+          <table>
+            <thead><tr><th>Fund</th><th class="num">Prior</th><th class="num">After views</th><th class="num">Shift</th></tr></thead>
+            <tbody>
+              <tr><td>Inflation-protected</td><td class="num">0.27</td><td class="num">2.89</td><td class="num">+2.62</td></tr>
+              <tr><td>Gold</td><td class="num">1.12</td><td class="num">2.35</td><td class="num">+1.23</td></tr>
+              <tr><td>US dollar</td><td class="num">−0.14</td><td class="num">0.99</td><td class="num">+1.13</td></tr>
+              <tr><td>IG credit <span class="quiet">(no view)</span></td><td class="num">0.53</td><td class="num">2.19</td><td class="num">+1.66</td></tr>
+              <tr><td>Mid Treasuries <span class="quiet">(no view)</span></td><td class="num">0.32</td><td class="num">1.89</td><td class="num">+1.57</td></tr>
+              <tr><td>Long Treasuries</td><td class="num">0.72</td><td class="num">1.41</td><td class="num">+0.69</td></tr>
+              <tr><td>US stocks</td><td class="num">2.00</td><td class="num">3.03</td><td class="num">+1.02</td></tr>
+            </tbody>
+          </table>
+          <p class="quiet" style="margin:8px 0 0">Credit and mid Treasuries moved without a view because they are 0.7 correlated with inflation-protected bonds. Inputs: 104 weeks of returns, market weights, risk aversion 3, tau 0.05.</p></div>
+        <div class="panel"><h4>What those returns "want" with no rules</h4>
+          <div class="bars signed wish">
+            <div class="row"><span class="t">Infl.-protected</span><div class="tr"><div class="f off" style="width:100%"></div></div><span class="v">949%</span></div>
+            <div class="row"><span class="t">US dollar</span><div class="tr"><div class="f off" style="width:100%"></div></div><span class="v">114%</span></div>
+            <div class="row"><span class="t">US stocks</span><div class="tr"><div class="f" style="width:25%"></div></div><span class="v">25%</span></div>
+            <div class="row"><span class="t">Gold</span><div class="tr"><div class="f" style="width:17%"></div></div><span class="v">17%</span></div>
+            <div class="row"><span class="t">Mid Treasuries</span><div class="tr"><div class="f" style="width:14%"></div></div><span class="v">14%</span></div>
+            <div class="row"><span class="t">Long Treasuries</span><div class="tr"><div class="f neg off" style="width:100%"></div></div><span class="v">−186%</span></div>
+            <div class="row"><span class="t">Cash</span><div class="tr"><div class="f neg off" style="width:100%"></div></div><span class="v">−854%</span></div>
+          </div>
+          <p class="quiet" style="margin:8px 0 0">Centre line is zero; each half of the track is 100 percentage points. Amber bars run off the chart in both directions. A +2.6-point edge on a fund with 4% volatility is an enormous bet on paper. Nobody holds this. It is the honest unconstrained answer that the next station must tame.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATION 5: split -->
+  <div class="station">
+    <div class="n"><b>5</b><i></i></div>
+    <div class="card">
+      <h2>The split: fit the wish list inside the bank's rules</h2>
+      <p class="what"><b>What happens.</b> A deterministic optimiser finds the best portfolio for the blended returns that obeys every rule: no fund above 30% (stocks 35%, cash 40%), volatility under 10%, duration between 2 and 7 years, capital budget 0.60, no more than 25% of the book traded in a week. A separate rule-checker then reports which rules the portfolio is pressed against. <b>From here the two AI paths differ in one thing only: whether that report goes back to the model.</b></p>
+      <div class="lanes">
+        <div class="lane clip">
+          <span class="tag">5a · AI, silently clipped</span>
+          <h3>Rules applied, model not told</h3>
+          <div class="step"><span class="s">1</span><div><p>Optimiser runs on the blended returns. Status: optimal.</p>
+            <div class="bars clip">
+              <div class="row"><span class="t">Infl.-protected</span><div class="tr"><div class="f" style="width:75%"></div><span class="cap" style="left:75%"></span></div><span class="v">30.0%</span></div>
+              <div class="row"><span class="t">IG credit</span><div class="tr"><div class="f" style="width:75%"></div><span class="cap" style="left:75%"></span></div><span class="v">30.0%</span></div>
+              <div class="row"><span class="t">US stocks</span><div class="tr"><div class="f" style="width:52%"></div></div><span class="v">20.8%</span></div>
+              <div class="row"><span class="t">Mid Treasuries</span><div class="tr"><div class="f" style="width:29%"></div></div><span class="v">11.6%</span></div>
+              <div class="row"><span class="t">Gold</span><div class="tr"><div class="f" style="width:12%"></div></div><span class="v">4.7%</span></div>
+              <div class="row"><span class="t">Commodities</span><div class="tr"><div class="f" style="width:7.5%"></div></div><span class="v">3.0%</span></div>
+              <div class="row"><span class="t">US dollar</span><div class="tr"></div><span class="v">0.0%</span></div>
+            </div>
+            <p class="quiet" style="margin:6px 0 0">Black tick = the 30% cap. Bars scaled so 40% fills the track.</p></div></div>
+          <div class="step"><span class="s">2</span><div><p>The rule-checker writes its report. On this path it goes to the log only.</p>
+            <div class="msg silent">TIP (inflation-protected government bonds) is pinned at its single-asset cap of 30%; the views asked for more</div>
+            <div class="msg silent">LQD (investment-grade corporate bonds) is pinned at its single-asset cap of 30%; the views asked for more</div>
+            <p class="quiet" style="margin:6px 0 0">The model never mentioned credit. It got 30% of it because the blend spilled the inflation view into a correlated bond, and the cap on inflation-protected bonds pushed the rest there.</p></div></div>
+          <div class="step"><span class="s">3</span><div><p>Done. Book executed as is. Traded <b>2.1%</b> of the book.</p></div></div>
+        </div>
+        <div class="lane fb">
+          <span class="tag">5b · AI, told which rules it broke</span>
+          <h3>Checker writes back, model revises</h3>
+          <div class="step"><span class="s">1</span><div><p>Optimiser runs on the same blended returns. The checker's sentence is appended to the model's conversation, masked:</p>
+            <div class="msg">&lt;&lt;VIOLATIONS&gt;&gt;<br>- Asset D (inflation-protected government bonds) is pinned at its single-asset cap of about 30 percent; the views asked for more<br>&lt;&lt;END_VIOLATIONS&gt;&gt;<br>Revise your views so that a portfolio consistent with them is feasible ...</div></div></div>
+          <div class="step"><span class="s">2</span><div><p><b>Revision 1.</b> The model sets inflation-protected bonds to neutral ("asset at cap, so no overweight") and adds a −1% underweight on mid Treasuries. Optimiser runs again. A new rule binds and the checker writes again:</p>
+            <div class="msg">- portfolio duration 2.0y is pinned at the liability band floor 2.0y (views want it too short)</div></div></div>
+          <div class="step"><span class="s">3</span><div><p><b>Revision 2.</b> The model sets every bond to neutral and keeps only gold +3% and the dollar +2%. Optimiser runs a third time. Nothing binds.</p>
+            <div class="bars fb">
+              <div class="row"><span class="t">US dollar</span><div class="tr"><div class="f" style="width:67%"></div><span class="cap" style="left:75%"></span></div><span class="v">26.8%</span></div>
+              <div class="row"><span class="t">US stocks</span><div class="tr"><div class="f" style="width:56%"></div></div><span class="v">22.3%</span></div>
+              <div class="row"><span class="t">Mid Treasuries</span><div class="tr"><div class="f" style="width:42%"></div></div><span class="v">16.8%</span></div>
+              <div class="row"><span class="t">Infl.-protected</span><div class="tr"><div class="f" style="width:39%"></div><span class="cap" style="left:75%"></span></div><span class="v">15.6%</span></div>
+              <div class="row"><span class="t">Gold</span><div class="tr"><div class="f" style="width:38.5%"></div></div><span class="v">15.4%</span></div>
+              <div class="row"><span class="t">Commodities</span><div class="tr"><div class="f" style="width:7.8%"></div></div><span class="v">3.1%</span></div>
+              <div class="row"><span class="t">IG credit</span><div class="tr"></div><span class="v">0.0%</span></div>
+            </div>
+            <p class="quiet" style="margin:6px 0 0">Its logged reason: "To respect the portfolio duration floor of 2.0 years, the underweight stance on long-term and intermediate government bonds is reduced to neutral."</p></div></div>
+          <div class="step"><span class="s">4</span><div><p>Done after two rounds. Traded <b>25.0%</b> of the book, exactly the weekly limit.</p></div></div>
+        </div>
+      </div>
+      <div class="callout"><p><b>Same opinion, two books.</b> The clipped book is 60% in two bond funds jammed at their caps, one of which the model never asked for. The revised book carries the model's actual conviction, gold and the dollar, with bonds spread rather than pinned. Notice also that the revision ended with every bond at neutral, a retreat toward market weights. That pattern is the hypothesis in the scope note about where the feedback edge really comes from.</p></div>
+    </div>
+  </div>
+
+  <!-- STATION 6 -->
+  <div class="station last">
+    <div class="n"><b>6</b><i></i></div>
+    <div class="card">
+      <h2>Finish: hold for one week, score, repeat next Friday</h2>
+      <p class="what"><b>What happens.</b> Each book is held until Friday 14 August. Its return is recorded, the rule-checker re-tests the executed weights, and the whole route runs again with new data. After 114 Fridays the results become the dashboard.</p>
+      <div class="grid3">
+        <div class="panel"><h4>Risk against the limits, this week</h4>
+          <div class="dial"><span>Volatility, cap 10%</span><div class="tr"><div class="f" style="left:0;width:52%;background:var(--clip)"></div></div><span class="v">5.2% both</span></div>
+          <div class="dial"><span>Duration, band 2 to 7 y</span><div class="tr"><div class="band" style="left:22%;width:56%"></div><div class="f" style="left:60%;width:3px;background:var(--clip)"></div><div class="f" style="left:26%;width:3px;background:var(--fb)"></div></div><span class="v">5.5 vs 2.3 y</span></div>
+          <div class="dial"><span>Capital used, budget 0.60</span><div class="tr"><div class="f" style="left:0;width:76%;background:var(--clip)"></div><div class="f" style="left:0;width:93%;height:50%;background:var(--fb)"></div></div><span class="v">0.46 vs 0.56</span></div>
+          <div class="dial"><span>Traded, cap 25%</span><div class="tr"><div class="f" style="left:0;width:8%;background:var(--clip)"></div><div class="f" style="left:0;width:100%;height:50%;background:var(--fb)"></div></div><span class="v">2.1% vs 25.0%</span></div>
+          <p class="quiet" style="margin:8px 0 0">Orange = clipped, green = told. Both books pass every rule on the executed weights.</p></div>
+        <div class="panel"><h4>What each earned by 14 August</h4>
+          <div class="big" style="color:var(--clip)">+0.07%<small>AI, silently clipped</small></div>
+          <div class="big" style="color:var(--fb);margin-top:12px">+0.32%<small>AI, told which rules it broke</small></div>
+          <p class="quiet" style="margin:10px 0 0">For comparison that week: formula agent +0.45%, market weights +0.17%. One week proves nothing.</p></div>
+        <div class="panel"><h4>After 114 Fridays</h4>
+          <table><tbody>
+            <tr><td>AI, silently clipped</td><td class="num">Sharpe 0.01</td></tr>
+            <tr><td>AI, told which rules it broke</td><td class="num">Sharpe 0.79</td></tr>
+            <tr><td>Formula agent</td><td class="num">Sharpe −0.15</td></tr>
+            <tr><td>Hold market weights</td><td class="num">Sharpe 0.93</td></tr>
+          </tbody></table>
+          <p class="quiet" style="margin:8px 0 0">The gap between the two AI paths is the project's headline (p = 0.03). Neither beat simply holding the market over these two years.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <p class="meta" style="margin-top:28px">Sources: <code>outputs/runs/openai-postcutoff-aefba080/decisions/2026-08-07.json</code>, the run's weights and returns files, and a recomputation of the Black-Litterman step from raw prices (matches the log to four decimals). Full literal transcript: the "Finorchestra Worked Example" page and <code>docs/worked-example-2026-08-07.md</code>.</p>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  const G = {
+    'z-score': 'How far a reading sits from its own ten-year average, in standard deviations. Zero is typical, two is unusual.',
+    'Black-Litterman': 'A formula that starts from the returns implied by market weights and pulls each asset toward the model\'s view in proportion to confidence, letting correlated assets move together.',
+    'prior': 'The expected returns that would make simply holding market weights the optimal portfolio: risk aversion times covariance times market weights. The "no opinion" starting point.'
+  };
+  const tip = document.createElement('div'); tip.id = 'termtip'; tip.setAttribute('role', 'tooltip'); document.body.appendChild(tip);
+  let current = null;
+  function place(el) { const r = el.getBoundingClientRect(); tip.style.display = 'block'; const w = tip.offsetWidth, h = tip.offsetHeight; let left = r.left, top = r.bottom + 8; if (left + w > window.innerWidth - 12) left = Math.max(12, window.innerWidth - w - 12); if (top + h > window.innerHeight - 12) top = r.top - h - 8; tip.style.left = left + 'px'; tip.style.top = Math.max(8, top) + 'px'; }
+  function show(el) { const key = el.getAttribute('data-key'); if (!key || !G[key]) return; tip.replaceChildren(); const b = document.createElement('b'); b.textContent = key; tip.appendChild(b); tip.appendChild(document.createTextNode(G[key])); if (current) current.classList.remove('on'); current = el; el.classList.add('on'); place(el); }
+  function hide() { tip.style.display = 'none'; if (current) current.classList.remove('on'); current = null; }
+  document.querySelectorAll('dfn.hov').forEach(d => d.setAttribute('tabindex', '0'));
+  document.addEventListener('mouseover', e => { const t = e.target.closest && e.target.closest('dfn.hov'); if (t) show(t); });
+  document.addEventListener('mouseout', e => { const t = e.target.closest && e.target.closest('dfn.hov'); if (t && !(e.relatedTarget && t.contains(e.relatedTarget))) hide(); });
+  document.addEventListener('focusin', e => { const t = e.target.closest && e.target.closest('dfn.hov'); if (t) show(t); });
+  document.addEventListener('focusout', e => { const t = e.target.closest && e.target.closest('dfn.hov'); if (t) hide(); });
+  document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('dfn.hov'); if (t) { if (current === t && tip.style.display === 'block') hide(); else show(t); } else hide(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') hide(); });
+  window.addEventListener('scroll', hide, true); window.addEventListener('resize', hide);
+})();
+</script>
